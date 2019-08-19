@@ -1,0 +1,7 @@
+Import('env')
+#Script for lib
+objs = []
+objs.append(SConscript(['RTT/SConscript']))
+objs.append(SConscript(['HardFault/SConscript']))
+#objs.append(SConscript(['Syscalls/SConscript']))
+Return('objs')

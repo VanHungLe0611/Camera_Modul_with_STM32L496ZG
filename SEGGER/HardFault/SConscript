@@ -1,0 +1,6 @@
+Import('env')
+#Script for lib
+objs = []
+objs.append(env.Object(Glob('*.c')))
+#objs.append(env.Object(Glob('*.S')))
+Return('objs')

@@ -1,0 +1,11 @@
+.settings/
+.project
+.cproject
+build/
+Inc/user_main.h
+Src/user_main.c
+Drivers/CMSIS
+Drivers/STM32*
+*.o
+*.s
+*.dblite
