@@ -23,6 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "user_main.h"
+#include "var_interface.h"
 
 /* USER CODE END Includes */
 
@@ -49,6 +51,7 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart4;
 
 /* USER CODE BEGIN PV */
+uint8_t image_data[IMAGE_SIZE]={0};
 
 /* USER CODE END PV */
 
@@ -101,6 +104,7 @@ int main(void)
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
 
+  user_code2();
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -9,3 +9,4 @@ Drivers/STM32*
 *.o
 *.s
 *.dblite
+compile_commands.json
