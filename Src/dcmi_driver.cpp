@@ -24,7 +24,6 @@ uint8_t DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
   HAL_DCMI_Init(&hdcmi);
 
   CAMERA_factoryReset();
-
   if (ov2640_ReadID(CAMERA_OV2640_I2C_ADDRESS) == OV2640_ID) {
     /* Initialize the camera driver structure */
     camera = &ov2640_drv;
@@ -332,7 +331,7 @@ void DCMI_Driver::CAMERA_VsyncEventCallback(void) {
 }
 void DCMI_Driver::CAMERA_FrameEventCallback(void) {
   __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_FRAME);
-  HAL_UART_Transmit_DMA(&huart4, image_data, IMAGE_SIZE);
+  HAL_UART_Transmit_IT(&huart5, image_data, IMAGE_SIZE);
   SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE, "Frame captured event\n");
 }
 void DCMI_Driver::CAMERA_ErrorCallback(void) {

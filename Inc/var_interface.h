@@ -18,13 +18,13 @@ extern "C" {
 extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_dcmi;
 extern DCMI_HandleTypeDef hdcmi;
-extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart5;
 
 extern uint8_t image_data[];
 static uint32_t lineNum;
 
 /* CAMERA GLOBAL SETTING */
-#define CAMERA_DELAY_INTERVAL 500  // ms
+#define CAMERA_DELAY_INTERVAL 1000  // ms
 #define IMAGE_RESOLUTION CAMERA_R160x120
 #define IMAGE_SIZE CAMERA_R160x120_COLOR_MEMSIZE
 #define IMAGE_BANDFILTER_ENABLE 1
