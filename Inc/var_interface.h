@@ -19,6 +19,7 @@ extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_dcmi;
 extern DCMI_HandleTypeDef hdcmi;
 extern UART_HandleTypeDef huart5;
+extern DMA_HandleTypeDef hdma_memtomem_dma1_channel1;
 
 extern uint8_t image_data[];
 static uint32_t lineNum;
@@ -28,6 +29,8 @@ static uint32_t lineNum;
 #define IMAGE_RESOLUTION CAMERA_R160x120
 #define IMAGE_SIZE CAMERA_R160x120_COLOR_MEMSIZE
 #define IMAGE_BANDFILTER_ENABLE 1
+
+#define CAMERA_BUFFER (uint8_t*)0x68000800
 
 /*RTT debug activation*/
 #define CAMERA_DEBUG_RTT_DISABLE 0
