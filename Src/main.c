@@ -111,13 +111,14 @@ int main(void)
   MX_UART5_Init();
   MX_FMC_Init();
   /* USER CODE BEGIN 2 */
-	user_code2();
+  user_code2();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
+
 
     /* USER CODE END WHILE */
 
