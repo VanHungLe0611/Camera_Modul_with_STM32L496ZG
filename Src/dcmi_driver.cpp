@@ -8,7 +8,7 @@
 #include "dcmi_driver.h"
 #include "../SEGGER/RTT/SEGGER_RTT.h"
 
-CAMERA_DrvTypeDef *camera;
+// CAMERA_DrvTypeDef *camera;
 
 static uint32_t current_resolution;
 
@@ -31,11 +31,13 @@ uint8_t DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
     camera->Init(CAMERA_OV2640_I2C_ADDRESS, Resolution);
 
     /* specific default settings */
-    CAMERA_writeRegValue(DSP_CTRL_REG, 0x13, 0xc5); // activate band filter
-    //  CAMERA_writeRegValue(DSP_CTRL_REG, 0x13, 0xe5);  // deactivate band
-    //  filter
-    CAMERA_setOutputFormat(CAMERA_OUTPUT_FORMAT_YUV422);
-    CAMERA_BlackWhiteConfig(CAMERA_BLACK_WHITE_NORMAL);
+    if (IMAGE_BANDFILTER_ENABLE) {
+      CAMERA_writeRegValue(DSP_CTRL_REG, 0x13, 0xc5); // activate band filter
+    } else {
+      CAMERA_writeRegValue(DSP_CTRL_REG, 0x13, 0xe5); // deactivate band
+    }
+    CAMERA_setOutputFormat(IMAGE_DEFAULT_FORMAT);
+    CAMERA_BlackWhiteConfig(CAMERA_DEFAULT_COLORMODE);
 
     current_resolution = Resolution;
 
@@ -288,7 +290,6 @@ void DCMI_Driver::CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
 
 /** @brief write control signal to camera module (for camera module with only 1
  * register bank, e.g. OV9655)
- * @param REG_BANK_SEL true when choosing sensor
  * registers, false when choosing DSP register @param REG_ADDRESS @param VALUE
  */
 void DCMI_Driver::CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) {
@@ -311,18 +312,18 @@ void DCMI_Driver::CAMERA_factoryReset(void) {
 
 void DCMI_Driver::CAMERA_setOutputFormat(uint8_t format) {
   switch (format) {
-  case CAMERA_OUTPUT_FORMAT_JPEG:
+  case IMAGE_OUTPUT_FORMAT_JPEG:
     // TODO: JPEG
     break;
-  case CAMERA_OUTPUT_FORMAT_RAW10:
+  case IMAGE_OUTPUT_FORMAT_RAW10:
     CAMERA_writeRegValue(DSP_CTRL_REG, OV2640_DSP_IMAGE_MODE,
                          0x04); // enable RAW10-format
     break;
-  case CAMERA_OUTPUT_FORMAT_RBG565:
+  case IMAGE_OUTPUT_FORMAT_RBG565:
     CAMERA_writeRegValue(DSP_CTRL_REG, OV2640_DSP_IMAGE_MODE,
                          0x08); // enable RGB565-format
     break;
-  case CAMERA_OUTPUT_FORMAT_YUV422:
+  case IMAGE_OUTPUT_FORMAT_YUV422:
     CAMERA_writeRegValue(DSP_CTRL_REG, OV2640_DSP_IMAGE_MODE,
                          0x01); // enable YCBCR-format
     break;

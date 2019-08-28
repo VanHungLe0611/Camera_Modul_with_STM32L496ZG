@@ -20,10 +20,10 @@ extern "C" {
 #define SENSOR_CTRL_REG 0x01
 
 /* Macro for CAMERA_read-/writeRegVal functions */
-#define CAMERA_OUTPUT_FORMAT_YUV422 0x00
-#define CAMERA_OUTPUT_FORMAT_RAW10 0x01
-#define CAMERA_OUTPUT_FORMAT_RBG565 0x02
-#define CAMERA_OUTPUT_FORMAT_JPEG 0x03
+#define IMAGE_OUTPUT_FORMAT_YUV422 0x00
+#define IMAGE_OUTPUT_FORMAT_RAW10 0x01
+#define IMAGE_OUTPUT_FORMAT_RBG565 0x02
+#define IMAGE_OUTPUT_FORMAT_JPEG 0x03
 
 typedef enum {
   CAMERA_OK = 0x00,
@@ -36,6 +36,7 @@ private:
   DCMI_Driver() {}
   DCMI_Driver(const DCMI_Driver &);
   DCMI_Driver &operator=(const DCMI_Driver &);
+  CAMERA_DrvTypeDef *camera;
 
 public:
   static DCMI_Driver &instance() {
@@ -74,7 +75,7 @@ public:
   uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS);
   void CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
                             uint8_t VALUE);
-  void CAMERA_writeRegValue(REG_BANK_SEL, uint8_t REG_ADDRESS, uint8_t VALUE);
+  void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE);
 
   /* HAL Function override */
 };
