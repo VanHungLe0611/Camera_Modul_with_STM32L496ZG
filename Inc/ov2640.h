@@ -83,8 +83,9 @@ extern "C" {
 
 /* OV2640 Register Bank Select*/
 #define OV2640_DSP_RA_DLMT 0xFF /* Select register bank */
-#define OV2640_RDSP_RA_DLMT_SEL_DSP \
-  0x00 /* Digital signal processor control register bank*/
+
+/* Digital signal processor control register bank*/
+#define OV2640_RDSP_RA_DLMT_SEL_DSP 0x00
 #define OV2640_RDSP_RA_DLMT_SEL_SENSOR 0x01 /* Sensor control register bank */
 
 /*
@@ -244,9 +245,9 @@ extern "C" {
 #define OV2640_SENSOR_COM3 0x0C
 
 /* Common Control 4
- * [2] clock output 0: tri-state data out uupon power-down
- * 					1: DAta output pin hold at last state before power
- * down
+ * [2] clock output     0: tri-state data out uupon power-down
+ * 	        	1: DAta output pin hold at last state
+ * before power down
  * */
 #define OV2640_SENSOR_COM4 0x0D
 

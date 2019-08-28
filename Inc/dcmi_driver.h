@@ -32,21 +32,21 @@ typedef enum {
 } Camera_StatusTypeDef;
 
 class DCMI_Driver {
- private:
+private:
   DCMI_Driver() {}
-  DCMI_Driver(const DCMI_Driver&);
-  DCMI_Driver& operator=(const DCMI_Driver&);
+  DCMI_Driver(const DCMI_Driver &);
+  DCMI_Driver &operator=(const DCMI_Driver &);
 
- public:
-  static DCMI_Driver& instance() {
+public:
+  static DCMI_Driver &instance() {
     static DCMI_Driver _instance;
     return _instance;
   }
   ~DCMI_Driver() {}
   void CAMERA_MsInit(void);
   uint8_t CAMERA_Init(uint32_t Resolution);
-  void CAMERA_ContinuousStart(uint8_t* buff);
-  void CAMERA_SnapshotStart(uint8_t* buff);
+  void CAMERA_ContinuousStart(uint8_t *buff);
+  void CAMERA_SnapshotStart(uint8_t *buff);
   void CAMERA_Suspend(void);
   void CAMERA_Resume(void);
   uint8_t CAMERA_Stop(void);
@@ -74,6 +74,7 @@ class DCMI_Driver {
   uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS);
   void CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
                             uint8_t VALUE);
+  void CAMERA_writeRegValue(REG_BANK_SEL, uint8_t REG_ADDRESS, uint8_t VALUE);
 
   /* HAL Function override */
 };

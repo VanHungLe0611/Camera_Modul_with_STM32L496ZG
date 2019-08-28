@@ -265,7 +265,8 @@ uint8_t DCMI_Driver::CAMERA_readRegValue(uint8_t REG_ADDRESS) {
 }
 
 /**
- * @brief write control signal to camera module
+ * @brief write control signal to camera module (for camera module with multiple
+ * bank register, e.g. OV2640)
  * @param REG_BANK_SEL true when choosing sensor registers, false when choosing
  * DSP register
  * @param REG_ADDRESS
@@ -285,14 +286,26 @@ void DCMI_Driver::CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
   CAMERA_Delay(1);
 }
 
+/** @brief write control signal to camera module (for camera module with only 1
+ * register bank, e.g. OV9655)
+ * @param REG_BANK_SEL true when choosing sensor
+ * registers, false when choosing DSP register @param REG_ADDRESS @param VALUE
+ */
+void DCMI_Driver::CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) {
+  CAMERA_Delay(1);
+  CAMERA_IO_Write(OV2640_I2C_ADDRESS, REG_ADDRESS, VALUE);
+  CAMERA_Delay(1);
+}
+
 /**
  * @brief factory reset all camera register
  */
 void DCMI_Driver::CAMERA_factoryReset(void) {
-  CAMERA_writeRegValue(SENSOR_CTRL_REG, OV2640_SENSOR_COM7,
-                       0x88); // reset all registers
+  CAMERA_IO_Write(CAMERA_OV2640_I2C_ADDRESS, OV2640_DSP_RA_DLMT,
+                  OV2640_RDSP_RA_DLMT_SEL_DSP);
   CAMERA_Delay(1);
-  CAMERA_IO_Write(0xff, OV2640_DSP_RA_DLMT, OV2640_RDSP_RA_DLMT_SEL_DSP);
+  CAMERA_writeRegValue(SENSOR_CTRL_REG, OV2640_SENSOR_COM7,
+                       0x80); // reset all registers
   CAMERA_Delay(1);
 }
 
