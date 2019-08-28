@@ -17,8 +17,8 @@ static uint32_t current_resolution;
  * @param  Resolution: Camera Resolution
  * @retval Camera status
  */
-uint8_t DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
-  uint8_t ret = CAMERA_ERROR;
+Camera_StatusTypeDef DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
+  Camera_StatusTypeDef ret = CAMERA_ERROR;
 
   /* DCMI Initialization */
   HAL_DCMI_Init(&hdcmi);
@@ -49,15 +49,24 @@ uint8_t DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
                       "connection again)\n");
   }
 
-  if (ret == CAMERA_ERROR) {
+  camera_status = ret;
+  if (camera_status == CAMERA_ERROR) {
+    SEGGER_RTT_printf(
+        CAMERA_DEBUG_RTT_DISABLE,
+        "-------------Error: CAMERA cannot initialized------------------\n");
+  } else {
     SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
-                      "Error: CAMERA cannot initialized\n");
+                      "----------------CAMERA INIT OK-------------\n");
   }
   return ret;
 }
 
+/**
+ * @brief  Initializes the camera hardware
+ */
 void DCMI_Driver::CAMERA_MsInit(void) { HAL_DCMI_MspInit(&hdcmi); }
 
+// TODO: test video capture
 /**
  * @brief  Starts the camera capture in continuous mode.
  * @param  buff: pointer to the camera output buffer
@@ -77,7 +86,7 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
   lineNum = 0;
   __HAL_DCMI_ENABLE_IT(&hdcmi, DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
   SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
-                    "Start ting camera... (delay for %d ms)\n",
+                    "Starting camera... (delay for %d ms)\n",
                     CAMERA_DELAY_INTERVAL);
   CAMERA_Delay(CAMERA_DELAY_INTERVAL);
   SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
@@ -86,6 +95,7 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
                      GetSize(current_resolution));
 }
 
+// TODO: test suspend
 /**
  * @brief Suspend the CAMERA capture
  */
@@ -94,6 +104,7 @@ void DCMI_Driver::CAMERA_Suspend(void) {
   HAL_DCMI_Suspend(&hdcmi);
 }
 
+// TODO: test resume
 /**
  * @brief Resume the CAMERA capture
  */
@@ -106,10 +117,10 @@ void DCMI_Driver::CAMERA_Resume(void) {
  * @brief  Stop the CAMERA capture
  * @retval Camera status
  */
-uint8_t DCMI_Driver::CAMERA_Stop(void) {
+Camera_StatusTypeDef DCMI_Driver::CAMERA_Stop(void) {
   DCMI_HandleTypeDef *phdcmi;
 
-  uint8_t ret = CAMERA_ERROR;
+  Camera_StatusTypeDef ret = CAMERA_ERROR;
 
   /* Get the DCMI handle structure */
   phdcmi = &hdcmi;
@@ -120,6 +131,15 @@ uint8_t DCMI_Driver::CAMERA_Stop(void) {
 
   // TODO: make a camera on/off switch
 
+  camera_status = ret;
+  if (camera_status == CAMERA_ERROR) {
+    SEGGER_RTT_printf(
+        CAMERA_DEBUG_RTT_DISABLE,
+        "-------------Error: CAMERA cannot initialized------------------\n");
+  } else {
+    SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+                      "----------------CAMERA INIT OK-------------\n");
+  }
   return ret;
 }
 
@@ -335,24 +355,26 @@ void DCMI_Driver::CAMERA_setOutputFormat(uint8_t format) {
 void DCMI_Driver::CAMERA_LineEventCallback(void) {
   __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_LINE);
   lineNum++;
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE, "End of line %d event \n",
+  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "End of line %d event \n",
                     lineNum);
 }
 void DCMI_Driver::CAMERA_VsyncEventCallback(void) {
   __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_VSYNC);
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE,
                     "Vsync event - sychronization frame\n");
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE, "--current num of line: %d\n",
-                    lineNum);
+  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE,
+                    "--current num of line: %d\n", lineNum);
   lineNum = CAMERA_DEBUG_RTT_DISABLE;
   // TODO: send image over UART for preview in pc
 }
 void DCMI_Driver::CAMERA_FrameEventCallback(void) {
   __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_FRAME);
   HAL_UART_Transmit_IT(&huart5, CAMERA_BUFFER, IMAGE_SIZE);
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE, "Frame captured event\n");
+  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "Frame captured event\n");
+  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+                    "Frame captured, sending image...\n");
 }
 void DCMI_Driver::CAMERA_ErrorCallback(void) {
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE,
                     "Frame synchonization error event\n");
 }

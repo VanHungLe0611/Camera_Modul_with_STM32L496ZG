@@ -33,10 +33,11 @@ typedef enum {
 
 class DCMI_Driver {
 private:
-  DCMI_Driver() {}
+  DCMI_Driver() { camera_status = CAMERA_ERROR; }
   DCMI_Driver(const DCMI_Driver &);
   DCMI_Driver &operator=(const DCMI_Driver &);
   CAMERA_DrvTypeDef *camera;
+  Camera_StatusTypeDef camera_status;
 
 public:
   static DCMI_Driver &instance() {
@@ -45,12 +46,12 @@ public:
   }
   ~DCMI_Driver() {}
   void CAMERA_MsInit(void);
-  uint8_t CAMERA_Init(uint32_t Resolution);
+  Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution);
   void CAMERA_ContinuousStart(uint8_t *buff);
   void CAMERA_SnapshotStart(uint8_t *buff);
   void CAMERA_Suspend(void);
   void CAMERA_Resume(void);
-  uint8_t CAMERA_Stop(void);
+  Camera_StatusTypeDef CAMERA_Stop(void);
   /* Camera features functions prototype */
   void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
                                        uint32_t brightness_level);

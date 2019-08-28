@@ -19,7 +19,7 @@ void I2Cx_Init() {
  */
 void I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
   HAL_StatusTypeDef status = HAL_OK;
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+  SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE,
                     "I2c write register 0x%x of device 0x%x with value 0x%x\n",
                     Reg, Addr, Value);
 
@@ -45,7 +45,7 @@ uint8_t I2Cx_Read(uint8_t Addr, uint8_t Reg) {
 
   status = HAL_I2C_Mem_Read(hi2c_dcmi, Addr, Reg, I2C_MEMADD_SIZE_8BIT, &Value,
                             1, 1000);
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+  SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE,
                     "I2c read register 0x%x of device 0x%x\n", Reg, Addr);
   /* Check the communication status */
   if (status != HAL_OK) {
@@ -69,7 +69,7 @@ HAL_StatusTypeDef I2Cx_ReadMultiple(uint8_t Addr, uint16_t Reg,
                                     uint16_t Length) {
   HAL_StatusTypeDef status = HAL_OK;
 
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+  SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE,
                     "I2c read multiple: read register 0x%x of device 0x%x - "
                     "sum address: 0x%x\n",
                     Reg, Addr, MemAddress);
@@ -102,7 +102,7 @@ HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg,
                                      uint16_t MemAddress, uint8_t *Buffer,
                                      uint16_t Length) {
   HAL_StatusTypeDef status = HAL_OK;
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE,
+  SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE,
                     "I2c write multiple: write register 0x%x of device 0x%x - "
                     "sum address: 0x%x\n",
                     Reg, Addr, MemAddress);
@@ -124,15 +124,15 @@ HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg,
  */
 void I2Cx_Error(uint8_t Addr) {
   SEGGER_RTT_printf(
-      CAMERA_DEBUG_RTT_DISABLE,
+      CAMERA_I2C_DEBUG_RTT_DISABLE,
       "Error: I2C HAL Problem - Device at address 0x%x not respond\n", Addr);
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE, "Reinitializing I2c... ");
+  SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE, "Reinitializing I2c... ");
   /* De-initialize the I2C communication bus */
   HAL_I2C_DeInit(hi2c_dcmi);
 
   /* Re-Initialize the I2C communication bus */
   I2Cx_Init();
-  SEGGER_RTT_printf(CAMERA_DEBUG_RTT_DISABLE, "Done\n");
+  SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE, "Done\n");
 }
 
 /**
