@@ -75,8 +75,8 @@ Camera_StatusTypeDef DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
  */
 void DCMI_Driver::CAMERA_MsInit(void) { HAL_DCMI_MspInit(&hdcmi); }
 
-// TODO: test video capture
-/**
+// TODO: test video capture (dcmi continuous)
+/*
  * @brief  Starts the camera capture in continuous mode.
  * @param  buff: pointer to the camera output buffer
  */

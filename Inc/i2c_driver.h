@@ -15,8 +15,6 @@ extern "C" {
 #define USE_STM324x9I_EVAL
 #endif
 
-/* Exported constant IO ------------------------------------------------------*/
-#define EXC7200_I2C_ADDRESS 0x08
 #define CAMERA_OV2640_I2C_ADDRESS 0x60
 
 void I2Cx_Init();

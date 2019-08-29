@@ -38,6 +38,7 @@ private:
   DCMI_Driver &operator=(const DCMI_Driver &);
   CAMERA_DrvTypeDef *camera;
   Camera_StatusTypeDef camera_status;
+  uint16_t camera_i2c_addr;
 
 public:
   static DCMI_Driver &instance() {

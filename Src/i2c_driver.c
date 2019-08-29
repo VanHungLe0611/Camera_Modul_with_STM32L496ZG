@@ -79,12 +79,8 @@ HAL_StatusTypeDef I2Cx_ReadMultiple(uint8_t Addr, uint16_t Reg,
                     "sum address: 0x%x\n",
                     Reg, Addr, MemAddress);
 #endif
-  if (Addr == EXC7200_I2C_ADDRESS) {
-    status = HAL_I2C_Master_Receive(hi2c_dcmi, Addr, Buffer, Length, 1000);
-  } else {
     status = HAL_I2C_Mem_Read(hi2c_dcmi, Addr, (uint16_t)Reg, MemAddress,
                               Buffer, Length, 1000);
-  }
 
   /* Check the communication status */
   if (status != HAL_OK) {
