@@ -25,7 +25,7 @@ extern uint8_t image_data[];
 static uint32_t lineNum;
 
 /* CAMERA GLOBAL SETTING */
-#define CAMERA_DELAY_INTERVAL 100 // ms
+#define CAMERA_DELAY_INTERVAL 300 // ms - This also affect image quality
 #define IMAGE_RESOLUTION CAMERA_R160x120
 #define IMAGE_SIZE CAMERA_R160x120_COLOR_MEMSIZE
 #define IMAGE_BANDFILTER_ENABLE 1

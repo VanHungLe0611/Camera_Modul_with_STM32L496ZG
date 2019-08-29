@@ -56,11 +56,16 @@ Camera_StatusTypeDef DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
   if (camera_status == CAMERA_ERROR) {
     SEGGER_RTT_printf(
         CAMERA_COMMON_DEBUG_RTT_DISABLE,
-        "-------------Error: CAMERA cannot initialized------------------\n");
+        "-----------Error: CAMERA cannot initialized correctly----------\n");
   } else {
     SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
                       "----------------CAMERA INIT OK-------------\n");
   }
+  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
+                    "Starting camera... (delay for %d ms)\n",
+                    CAMERA_DELAY_INTERVAL);
+  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "Done\n");
+  CAMERA_Delay(CAMERA_DELAY_INTERVAL);
 #endif
   return ret;
 }
@@ -90,10 +95,6 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
   lineNum = 0;
   __HAL_DCMI_ENABLE_IT(&hdcmi, DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
 #ifdef CAMERA_DEBUG_RTT
-  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-                    "Starting camera... (delay for %d ms)\n",
-                    CAMERA_DELAY_INTERVAL);
-  CAMERA_Delay(CAMERA_DELAY_INTERVAL);
   SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
                     "Start taking a snapshot image\n");
 #endif
@@ -368,6 +369,7 @@ void DCMI_Driver::CAMERA_LineEventCallback(void) {
                     lineNum);
 #endif
 }
+
 void DCMI_Driver::CAMERA_VsyncEventCallback(void) {
   __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_VSYNC);
 #ifdef CAMERA_DEBUG_RTT
@@ -379,15 +381,17 @@ void DCMI_Driver::CAMERA_VsyncEventCallback(void) {
   lineNum = 0;
   // TODO: send image over UART for preview in pc
 }
+
 void DCMI_Driver::CAMERA_FrameEventCallback(void) {
   __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_FRAME);
-  HAL_UART_Transmit_IT(&huart5, CAMERA_BUFFER, IMAGE_SIZE);
+  HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER, IMAGE_SIZE);
 #ifdef CAMERA_DEBUG_RTT
   SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "Frame captured event\n");
   SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
                     "Frame captured, sending image...\n");
 #endif
 }
+
 void DCMI_Driver::CAMERA_ErrorCallback(void) {
 #ifdef CAMERA_DEBUG_RTT
   SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE,
