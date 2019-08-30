@@ -20,7 +20,7 @@ extern "C" {
 #define DSP_CTRL_REG 0x00
 #define SENSOR_CTRL_REG 0x01
 
-class ov2640_dcmi_drv : public DCMI_Driver {
+class ov2640_dcmi_drv : public DCMI_Driver{
 private:
   ov2640_dcmi_drv() {
     camera_status = CAMERA_ERROR;
@@ -37,20 +37,19 @@ public:
     return _instance;
   }
   ~ov2640_dcmi_drv() {}
+  
+  /* Camera sensor initialization */
   Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution);
-  /* Camera features functions prototype */
+
+  /* Sensor control */
   void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
                                        uint32_t brightness_level);
   void CAMERA_BlackWhiteConfig(uint32_t Mode);
   void CAMERA_ColorEffectConfig(uint32_t Effect);
   void CAMERA_factoryReset(void);
   void CAMERA_setOutputFormat(uint8_t format);
-  /* To be called in DCMI_IRQHandler function */
-  void CAMERA_IRQHandler(void);
-  /* To be called in DMA2_Stream1_IRQHandler function */
-  void CAMERA_DMA_IRQHandler(void);
 
-  /* utilities function */
+  /* Register control */
   uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS);
   void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE);
 

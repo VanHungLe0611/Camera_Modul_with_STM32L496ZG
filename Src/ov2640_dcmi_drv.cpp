@@ -10,7 +10,6 @@
 
 // CAMERA_DrvTypeDef *camera;
 
-
 /**
  * @brief  Initializes the camera with defauft configurations.
  * @param  Resolution: Camera Resolution
@@ -20,7 +19,7 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
   Camera_StatusTypeDef ret = CAMERA_ERROR;
 
   /* DCMI Initialization */
-  //HAL_DCMI_Init(&hdcmi); //TODO: do we need this?
+  // HAL_DCMI_Init(&hdcmi); //TODO: do we need this?
 
   if (ov2640_ReadID(camera_i2c_addr) == OV2640_ID) {
     /* Initialize the camera driver structure */
@@ -69,7 +68,6 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
   return ret;
 }
 
-
 /**
  * @brief  Configures the camera contrast and brightness.
  * @param  contrast_level: Contrast level
@@ -87,11 +85,11 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
  *            @arg  CAMERA_BRIGHTNESS_LEVEL1: for brightness -1
  *            @arg  CAMERA_BRIGHTNESS_LEVEL0: for brightness -2
  */
-void ov2640_dcmi_drv::CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
-                                                  uint32_t brightness_level) {
+void ov2640_dcmi_drv::CAMERA_ContrastBrightnessConfig(
+    uint32_t contrast_level, uint32_t brightness_level) {
   if (camera->Config != NULL) {
-    camera->Config(camera_i2c_addr, CAMERA_CONTRAST_BRIGHTNESS,
-                   contrast_level, brightness_level);
+    camera->Config(camera_i2c_addr, CAMERA_CONTRAST_BRIGHTNESS, contrast_level,
+                   brightness_level);
   }
 }
 
@@ -126,50 +124,6 @@ void ov2640_dcmi_drv::CAMERA_ColorEffectConfig(uint32_t Effect) {
 }
 
 /**
- * @brief  Line event callback
- * @param  hdcmi: pointer to the DCMI handle
- */
-void HAL_DCMI_LineEventCallback(DCMI_HandleTypeDef *hdcmi) {
-  ov2640_dcmi_drv::instance().CAMERA_LineEventCallback();
-}
-
-/**
- * @brief  VSYNC event callback
- * @param  hdcmi: pointer to the DCMI handle
- */
-void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi) {
-  ov2640_dcmi_drv::instance().CAMERA_VsyncEventCallback();
-}
-
-/**
- * @brief  Frame event callback
- * @param  hdcmi: pointer to the DCMI handle
- */
-void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi) {
-  ov2640_dcmi_drv::instance().CAMERA_FrameEventCallback();
-}
-
-/**
- * @brief  Error callback
- * @param  hdcmi: pointer to the DCMI handle
- */
-void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi) {
-  ov2640_dcmi_drv::instance().CAMERA_ErrorCallback();
-}
-
-/**
- * @brief  Handles DCMI interrupt request.
- */
-void ov2640_dcmi_drv::CAMERA_IRQHandler(void) { HAL_DCMI_IRQHandler(&hdcmi); }
-
-/**
- * @brief  Handles DMA interrupt request.
- */
-void ov2640_dcmi_drv::CAMERA_DMA_IRQHandler(void) {
-  HAL_DMA_IRQHandler(hdcmi.DMA_Handle);
-}
-
-/**
  * @brief  Read Register value
  * @param  REG_ADDRESS: register address
  */
@@ -187,8 +141,8 @@ uint8_t ov2640_dcmi_drv::CAMERA_readRegValue(uint8_t REG_ADDRESS) {
  * @param REG_ADDRESS
  * @param VALUE
  */
-void ov2640_dcmi_drv::CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
-                                       uint8_t VALUE) {
+void ov2640_dcmi_drv::CAMERA_writeRegValue(bool REG_BANK_SEL,
+                                           uint8_t REG_ADDRESS, uint8_t VALUE) {
   if (REG_BANK_SEL == SENSOR_CTRL_REG) {
     CAMERA_IO_Write(OV2640_I2C_ADDRESS, OV2640_DSP_RA_DLMT,
                     OV2640_RDSP_RA_DLMT_SEL_SENSOR);
@@ -201,9 +155,10 @@ void ov2640_dcmi_drv::CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRES
   CAMERA_Delay(1);
 }
 
-/** @brief write control signal to camera module (for camera module with only 1
- * register bank, e.g. OV9655)
- * registers, false when choosing DSP register @param REG_ADDRESS @param VALUE
+/** @brief write control signal to camera module  registers, false when choosing
+ * DSP register
+ * @param REG_ADDRESS
+ * @param VALUE
  */
 void ov2640_dcmi_drv::CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) {
   CAMERA_Delay(1);
@@ -244,4 +199,3 @@ void ov2640_dcmi_drv::CAMERA_setOutputFormat(uint8_t format) {
     break;
   }
 };
-

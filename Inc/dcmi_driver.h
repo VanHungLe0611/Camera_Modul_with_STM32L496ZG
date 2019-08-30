@@ -29,6 +29,7 @@ typedef enum {
   CAMERA_TIMEOUT = 0x02
 } Camera_StatusTypeDef;
 
+/* START DCMI_Driver class*/
 class DCMI_Driver {
 protected:
   CAMERA_DrvTypeDef *camera;
@@ -37,37 +38,50 @@ protected:
   uint32_t current_resolution;
 
 public:
-  /*--------------------- DCMI common functions------------------------------- */
+  /*
+   *--------------------- DCMI common functions-------------------------------
+   */
+  /* Hardware initialization */
   void CAMERA_MsInit(void);
-  virtual Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution) = 0;
+
+  /* Camera common operations */
   void CAMERA_ContinuousStart(uint8_t *buff);
   void CAMERA_SnapshotStart(uint8_t *buff);
   void CAMERA_Suspend(void);
   void CAMERA_Resume(void);
   Camera_StatusTypeDef CAMERA_Stop(void);
-  /* Camera features functions prototype */
+
+  /* Camera interrupts handler and callbacks functions */
+  static void CAMERA_LineEventCallback(void);
+  static void CAMERA_VsyncEventCallback(void);
+  static void CAMERA_FrameEventCallback(void);
+  static void CAMERA_ErrorCallback(void);
+
+  void CAMERA_IRQHandler(void);
+  void CAMERA_DMA_IRQHandler(void);
+
+  uint32_t GetSize(uint32_t resolution);
+
+  /*
+   *----------------- interface functions for sensor--------------------------
+   */
+  /* Camera sensor initialization */
+  virtual Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution) = 0;
+
+  /* Register control */
+  virtual uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS) = 0;
+  virtual void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) = 0;
+
+  /* Sensor control */
   virtual void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
                                                uint32_t brightness_level) = 0;
   virtual void CAMERA_BlackWhiteConfig(uint32_t Mode) = 0;
   virtual void CAMERA_ColorEffectConfig(uint32_t Effect) = 0;
   virtual void CAMERA_factoryReset(void) = 0;
   virtual void CAMERA_setOutputFormat(uint8_t format) = 0;
-  /* Camera interrupts and callbacks functions */
-  void CAMERA_LineEventCallback(void);
-  void CAMERA_VsyncEventCallback(void);
-  void CAMERA_FrameEventCallback(void);
-  void CAMERA_ErrorCallback(void);
-
-  /* To be called in DCMI_IRQHandler function */
-  virtual void CAMERA_IRQHandler(void) = 0;
-  /* To be called in DMA2_Stream1_IRQHandler function */
-  virtual void CAMERA_DMA_IRQHandler(void) = 0;
-
-  /* utilities function */
-  uint32_t GetSize(uint32_t resolution);
-  virtual uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS) = 0;
-  virtual void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) = 0;
 };
+/* END  DCMI_Driver class*/
+
 
 #ifdef __cplusplus
 }

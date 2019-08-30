@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "stm32l4xx.h"
+
 /* Image mem size in bytes */
 #define CAMERA_R160x120_COLOR_MEMSIZE 0x9600
 #define CAMERA_R320x240_COLOR_MEMSIZE 0x25800
