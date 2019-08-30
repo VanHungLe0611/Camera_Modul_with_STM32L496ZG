@@ -12,8 +12,10 @@
 extern "C" {
 #endif
 
-#include "stm32l4xx_hal.h"
+#include "SEGGER_RTT.h"
 #include "camera.h"
+#include "stm32l4xx_hal.h"
+#include "var_interface.h"
 
 /* Macro for CAMERA_read-/writeRegVal functions */
 #define IMAGE_OUTPUT_FORMAT_YUV422 0x00
@@ -32,15 +34,17 @@ protected:
   CAMERA_DrvTypeDef *camera;
   Camera_StatusTypeDef camera_status;
   uint16_t camera_i2c_addr;
+  uint32_t current_resolution;
 
 public:
-  virtual void CAMERA_MsInit(void) = 0;
+  /*--------------------- DCMI common functions------------------------------- */
+  void CAMERA_MsInit(void);
   virtual Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution) = 0;
-  virtual void CAMERA_ContinuousStart(uint8_t *buff) = 0;
-  virtual void CAMERA_SnapshotStart(uint8_t *buff) = 0;
-  virtual void CAMERA_Suspend(void) = 0;
-  virtual void CAMERA_Resume(void) = 0;
-  virtual Camera_StatusTypeDef CAMERA_Stop(void) = 0;
+  void CAMERA_ContinuousStart(uint8_t *buff);
+  void CAMERA_SnapshotStart(uint8_t *buff);
+  void CAMERA_Suspend(void);
+  void CAMERA_Resume(void);
+  Camera_StatusTypeDef CAMERA_Stop(void);
   /* Camera features functions prototype */
   virtual void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
                                                uint32_t brightness_level) = 0;
@@ -49,10 +53,10 @@ public:
   virtual void CAMERA_factoryReset(void) = 0;
   virtual void CAMERA_setOutputFormat(uint8_t format) = 0;
   /* Camera interrupts and callbacks functions */
-  virtual void CAMERA_LineEventCallback(void) = 0;
-  virtual void CAMERA_VsyncEventCallback(void) = 0;
-  virtual void CAMERA_FrameEventCallback(void) = 0;
-  virtual void CAMERA_ErrorCallback(void) = 0;
+  void CAMERA_LineEventCallback(void);
+  void CAMERA_VsyncEventCallback(void);
+  void CAMERA_FrameEventCallback(void);
+  void CAMERA_ErrorCallback(void);
 
   /* To be called in DCMI_IRQHandler function */
   virtual void CAMERA_IRQHandler(void) = 0;
@@ -60,7 +64,7 @@ public:
   virtual void CAMERA_DMA_IRQHandler(void) = 0;
 
   /* utilities function */
-  virtual uint32_t GetSize(uint32_t resolution) = 0;
+  uint32_t GetSize(uint32_t resolution);
   virtual uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS) = 0;
   virtual void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) = 0;
 };

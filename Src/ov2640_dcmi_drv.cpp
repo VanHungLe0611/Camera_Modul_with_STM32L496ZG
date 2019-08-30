@@ -10,7 +10,6 @@
 
 // CAMERA_DrvTypeDef *camera;
 
-static uint32_t current_resolution;
 
 /**
  * @brief  Initializes the camera with defauft configurations.
@@ -21,7 +20,7 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
   Camera_StatusTypeDef ret = CAMERA_ERROR;
 
   /* DCMI Initialization */
-  HAL_DCMI_Init(&hdcmi);
+  //HAL_DCMI_Init(&hdcmi); //TODO: do we need this?
 
   if (ov2640_ReadID(camera_i2c_addr) == OV2640_ID) {
     /* Initialize the camera driver structure */
@@ -70,121 +69,6 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
   return ret;
 }
 
-/**
- * @brief  Initializes the camera hardware
- */
-void ov2640_dcmi_drv::CAMERA_MsInit(void) { HAL_DCMI_MspInit(&hdcmi); }
-
-// TODO: test video capture (dcmi continuous)
-/*
- * @brief  Starts the camera capture in continuous mode.
- * @param  buff: pointer to the camera output buffer
- */
-void ov2640_dcmi_drv::CAMERA_ContinuousStart(uint8_t *buff) {
-  /* Start the camera capture */
-  HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)buff,
-                     GetSize(current_resolution));
-}
-
-/**
- * @brief  Starts the camera capture in snapshot mode.
- * @param  buff: pointer to the camera output buffer
- */
-void ov2640_dcmi_drv::CAMERA_SnapshotStart(uint8_t *buff) {
-  /* Start the camera capture */
-  lineNum = 0;
-  __HAL_DCMI_ENABLE_IT(&hdcmi, DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
-#ifdef CAMERA_DEBUG_RTT
-  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-                    "Start taking a snapshot image\n");
-#endif
-  HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_SNAPSHOT, (uint32_t)buff,
-                     GetSize(current_resolution));
-}
-
-// TODO: test suspend
-/**
- * @brief Suspend the CAMERA capture
- */
-void ov2640_dcmi_drv::CAMERA_Suspend(void) {
-  /* Suspend the Camera Capture */
-  HAL_DCMI_Suspend(&hdcmi);
-}
-
-// TODO: test resume
-/**
- * @brief Resume the CAMERA capture
- */
-void ov2640_dcmi_drv::CAMERA_Resume(void) {
-  /* Start the Camera Capture */
-  HAL_DCMI_Resume(&hdcmi);
-}
-
-/**
- * @brief  Stop the CAMERA capture
- * @retval Camera status
- */
-Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Stop(void) {
-  DCMI_HandleTypeDef *phdcmi;
-
-  Camera_StatusTypeDef ret = CAMERA_ERROR;
-
-  /* Get the DCMI handle structure */
-  phdcmi = &hdcmi;
-
-  if (HAL_DCMI_Stop(phdcmi) == HAL_OK) {
-    ret = CAMERA_OK;
-  }
-
-  // TODO: make a camera on/off switch
-
-  camera_status = ret;
-#ifdef CAMERA_DEBUG_RTT
-  if (camera_status == CAMERA_ERROR) {
-    SEGGER_RTT_printf(
-        CAMERA_COMMON_DEBUG_RTT_DISABLE,
-        "-------------Error: CAMERA cannot initialized------------------\n");
-  } else {
-    SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-                      "----------------CAMERA INIT OK-------------\n");
-  }
-#endif
-  return ret;
-}
-
-/**
- * @brief Get capture size (in words)
- * @param Resolution
- * 		   Posible Value
- * 		     @arg CAMERA_R160x120
- * 		     @arg CAMERA_R320x240
- * 		     @arg CAMERA_R480x272
- * 		     @arg CAMERA_R640x480
- */
-uint32_t ov2640_dcmi_drv::GetSize(uint32_t resolution) {
-  uint32_t size = 0;
-
-  /* Get capture size */
-  switch (resolution) {
-  case CAMERA_R160x120: {
-    size = 0x2580;
-  } break;
-  case CAMERA_R320x240: {
-    size = 0x9600;
-  } break;
-  case CAMERA_R480x272: {
-    size = 0xFF00;
-  } break;
-  case CAMERA_R640x480: {
-    size = 0x25800;
-  } break;
-  default: {
-    break;
-  }
-  }
-
-  return size;
-}
 
 /**
  * @brief  Configures the camera contrast and brightness.
@@ -361,40 +245,3 @@ void ov2640_dcmi_drv::CAMERA_setOutputFormat(uint8_t format) {
   }
 };
 
-void ov2640_dcmi_drv::CAMERA_LineEventCallback(void) {
-  __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_LINE);
-  lineNum++;
-#ifdef CAMERA_DEBUG_RTT
-  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "End of line %d event \n",
-                    lineNum);
-#endif
-}
-
-void ov2640_dcmi_drv::CAMERA_VsyncEventCallback(void) {
-  __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_VSYNC);
-#ifdef CAMERA_DEBUG_RTT
-  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-                    "Vsync event - sychronization frame\n");
-  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "--Total line read: %d\n",
-                    lineNum);
-#endif
-  lineNum = 0;
-  // TODO: send image over UART for preview in pc
-}
-
-void ov2640_dcmi_drv::CAMERA_FrameEventCallback(void) {
-  __HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_FRAME);
-  HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER, IMAGE_SIZE);
-#ifdef CAMERA_DEBUG_RTT
-  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "Frame captured event\n");
-  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-                    "Frame captured, sending image...\n");
-#endif
-}
-
-void ov2640_dcmi_drv::CAMERA_ErrorCallback(void) {
-#ifdef CAMERA_DEBUG_RTT
-  SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE,
-                    "ERROR: Frame synchonization error event\n");
-#endif
-}

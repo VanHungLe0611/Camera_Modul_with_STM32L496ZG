@@ -20,7 +20,7 @@ extern "C" {
 #define DSP_CTRL_REG 0x00
 #define SENSOR_CTRL_REG 0x01
 
-class ov2640_dcmi_drv : DCMI_Driver {
+class ov2640_dcmi_drv : public DCMI_Driver {
 private:
   ov2640_dcmi_drv() {
     camera_status = CAMERA_ERROR;
@@ -37,13 +37,7 @@ public:
     return _instance;
   }
   ~ov2640_dcmi_drv() {}
-  void CAMERA_MsInit(void);
   Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution);
-  void CAMERA_ContinuousStart(uint8_t *buff);
-  void CAMERA_SnapshotStart(uint8_t *buff);
-  void CAMERA_Suspend(void);
-  void CAMERA_Resume(void);
-  Camera_StatusTypeDef CAMERA_Stop(void);
   /* Camera features functions prototype */
   void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
                                        uint32_t brightness_level);
@@ -51,19 +45,12 @@ public:
   void CAMERA_ColorEffectConfig(uint32_t Effect);
   void CAMERA_factoryReset(void);
   void CAMERA_setOutputFormat(uint8_t format);
-  /* Camera interrupts and callbacks functions */
-  void CAMERA_LineEventCallback(void);
-  void CAMERA_VsyncEventCallback(void);
-  void CAMERA_FrameEventCallback(void);
-  void CAMERA_ErrorCallback(void);
-
   /* To be called in DCMI_IRQHandler function */
   void CAMERA_IRQHandler(void);
   /* To be called in DMA2_Stream1_IRQHandler function */
   void CAMERA_DMA_IRQHandler(void);
 
   /* utilities function */
-  uint32_t GetSize(uint32_t resolution);
   uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS);
   void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE);
 
