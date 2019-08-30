@@ -20,23 +20,23 @@ extern "C" {
 #define DSP_CTRL_REG 0x00
 #define SENSOR_CTRL_REG 0x01
 
-class DCMI_Driver : DCMI_Driver_interface {
+class ov2640_dcmi_drv : DCMI_Driver_interface {
 private:
-  DCMI_Driver() {
+  ov2640_dcmi_drv() {
     camera_status = CAMERA_ERROR;
     camera_i2c_addr = CAMERA_OV2640_I2C_ADDRESS;
   }
-  DCMI_Driver(const DCMI_Driver &);
-  DCMI_Driver &operator=(const DCMI_Driver &);
+  ov2640_dcmi_drv(const ov2640_dcmi_drv &);
+  ov2640_dcmi_drv &operator=(const ov2640_dcmi_drv &);
   void CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
                             uint8_t VALUE);
 
 public:
-  static DCMI_Driver &instance() {
-    static DCMI_Driver _instance;
+  static ov2640_dcmi_drv &instance() {
+    static ov2640_dcmi_drv _instance;
     return _instance;
   }
-  ~DCMI_Driver() {}
+  ~ov2640_dcmi_drv() {}
   void CAMERA_MsInit(void);
   Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution);
   void CAMERA_ContinuousStart(uint8_t *buff);
