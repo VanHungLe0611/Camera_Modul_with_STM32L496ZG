@@ -12,33 +12,24 @@
 extern "C" {
 #endif
 
+#include "dcmi_driver_interface.h"
 #include "i2c_driver.h"
 #include "ov2640.h"
-#include "stm32l4xx_hal.h"
 
+#define CAMERA_OV2640_I2C_ADDRESS 0x60
 #define DSP_CTRL_REG 0x00
 #define SENSOR_CTRL_REG 0x01
 
-/* Macro for CAMERA_read-/writeRegVal functions */
-#define IMAGE_OUTPUT_FORMAT_YUV422 0x00
-#define IMAGE_OUTPUT_FORMAT_RAW10 0x01
-#define IMAGE_OUTPUT_FORMAT_RBG565 0x02
-#define IMAGE_OUTPUT_FORMAT_JPEG 0x03
-
-typedef enum {
-  CAMERA_OK = 0x00,
-  CAMERA_ERROR = 0x01,
-  CAMERA_TIMEOUT = 0x02
-} Camera_StatusTypeDef;
-
-class DCMI_Driver {
+class DCMI_Driver : DCMI_Driver_interface {
 private:
-  DCMI_Driver() { camera_status = CAMERA_ERROR; }
+  DCMI_Driver() {
+    camera_status = CAMERA_ERROR;
+    camera_i2c_addr = CAMERA_OV2640_I2C_ADDRESS;
+  }
   DCMI_Driver(const DCMI_Driver &);
   DCMI_Driver &operator=(const DCMI_Driver &);
-  CAMERA_DrvTypeDef *camera;
-  Camera_StatusTypeDef camera_status;
-  uint16_t camera_i2c_addr;
+  void CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
+                            uint8_t VALUE);
 
 public:
   static DCMI_Driver &instance() {
@@ -65,7 +56,6 @@ public:
   void CAMERA_VsyncEventCallback(void);
   void CAMERA_FrameEventCallback(void);
   void CAMERA_ErrorCallback(void);
-  void DCMI_ITConfig(uint16_t DCMI_IT, FunctionalState NewState);
 
   /* To be called in DCMI_IRQHandler function */
   void CAMERA_IRQHandler(void);
@@ -75,8 +65,6 @@ public:
   /* utilities function */
   uint32_t GetSize(uint32_t resolution);
   uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS);
-  void CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
-                            uint8_t VALUE);
   void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE);
 
   /* HAL Function override */

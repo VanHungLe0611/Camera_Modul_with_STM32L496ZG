@@ -15,7 +15,6 @@ extern "C" {
 #define USE_STM324x9I_EVAL
 #endif
 
-#define CAMERA_OV2640_I2C_ADDRESS 0x60
 
 void I2Cx_Init();
 void I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);

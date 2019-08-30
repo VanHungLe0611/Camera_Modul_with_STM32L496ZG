@@ -23,12 +23,12 @@ Camera_StatusTypeDef DCMI_Driver::CAMERA_Init(uint32_t Resolution) {
   /* DCMI Initialization */
   HAL_DCMI_Init(&hdcmi);
 
-  if (ov2640_ReadID(CAMERA_OV2640_I2C_ADDRESS) == OV2640_ID) {
+  if (ov2640_ReadID(camera_i2c_addr) == OV2640_ID) {
     /* Initialize the camera driver structure */
     camera = &ov2640_drv;
 
     /* Camera Init */
-    camera->Init(CAMERA_OV2640_I2C_ADDRESS, Resolution);
+    camera->Init(camera_i2c_addr, Resolution);
 
     /* specific default settings */
     if (IMAGE_BANDFILTER_ENABLE) {
@@ -206,7 +206,7 @@ uint32_t DCMI_Driver::GetSize(uint32_t resolution) {
 void DCMI_Driver::CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
                                                   uint32_t brightness_level) {
   if (camera->Config != NULL) {
-    camera->Config(CAMERA_OV2640_I2C_ADDRESS, CAMERA_CONTRAST_BRIGHTNESS,
+    camera->Config(camera_i2c_addr, CAMERA_CONTRAST_BRIGHTNESS,
                    contrast_level, brightness_level);
   }
 }
@@ -222,7 +222,7 @@ void DCMI_Driver::CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
  */
 void DCMI_Driver::CAMERA_BlackWhiteConfig(uint32_t Mode) {
   if (camera->Config != NULL) {
-    camera->Config(CAMERA_OV2640_I2C_ADDRESS, CAMERA_BLACK_WHITE, Mode, 0);
+    camera->Config(camera_i2c_addr, CAMERA_BLACK_WHITE, Mode, 0);
   }
 }
 
@@ -237,7 +237,7 @@ void DCMI_Driver::CAMERA_BlackWhiteConfig(uint32_t Mode) {
  */
 void DCMI_Driver::CAMERA_ColorEffectConfig(uint32_t Effect) {
   if (camera->Config != NULL) {
-    camera->Config(CAMERA_OV2640_I2C_ADDRESS, CAMERA_COLOR_EFFECT, Effect, 0);
+    camera->Config(camera_i2c_addr, CAMERA_COLOR_EFFECT, Effect, 0);
   }
 }
 
@@ -331,7 +331,7 @@ void DCMI_Driver::CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) {
  * @brief factory reset all camera register
  */
 void DCMI_Driver::CAMERA_factoryReset(void) {
-  CAMERA_IO_Write(CAMERA_OV2640_I2C_ADDRESS, OV2640_DSP_RA_DLMT,
+  CAMERA_IO_Write(camera_i2c_addr, OV2640_DSP_RA_DLMT,
                   OV2640_RDSP_RA_DLMT_SEL_DSP);
   CAMERA_Delay(1);
   CAMERA_writeRegValue(SENSOR_CTRL_REG, OV2640_SENSOR_COM7,
