@@ -1,4 +1,4 @@
-#include "i2c_driver.h"
+#include "i2c_dcmi_driver.h"
 
 static I2C_HandleTypeDef *hi2c_dcmi;
 // TODO: read/write should do multiple try if I2c error happens

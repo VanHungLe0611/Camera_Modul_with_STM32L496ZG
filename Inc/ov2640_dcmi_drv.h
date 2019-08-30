@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 #include "dcmi_driver.h"
-#include "i2c_driver.h"
+#include "i2c_dcmi_driver.h"
 #include "ov2640.h"
 
 #define CAMERA_OV2640_I2C_ADDRESS 0x60
