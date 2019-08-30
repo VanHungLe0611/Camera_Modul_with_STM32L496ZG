@@ -5,8 +5,8 @@
  *      Author: duyanhpham
  */
 
-#ifndef INC_DCMI_DRIVER_INTERFACE_H_
-#define INC_DCMI_DRIVER_INTERFACE_H_
+#ifndef INC_DCMI_DRIVER_H_
+#define INC_DCMI_DRIVER_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +27,7 @@ typedef enum {
   CAMERA_TIMEOUT = 0x02
 } Camera_StatusTypeDef;
 
-class DCMI_Driver_interface {
+class DCMI_Driver {
 protected:
   CAMERA_DrvTypeDef *camera;
   Camera_StatusTypeDef camera_status;
@@ -69,4 +69,4 @@ public:
 }
 #endif
 
-#endif /* INC_DCMI_DRIVER_INTERFACE_H_ */
+#endif /* INC_DCMI_DRIVER_H_ */

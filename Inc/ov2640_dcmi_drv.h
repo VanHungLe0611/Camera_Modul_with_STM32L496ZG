@@ -5,14 +5,14 @@
  *      Author: duyanhpham
  */
 
-#ifndef INC_DCMI_DRIVER_H_
-#define INC_DCMI_DRIVER_H_
+#ifndef INC_OV2640_DCMI_DRV_H_
+#define INC_OV2640_DCMI_DRV_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "dcmi_driver_interface.h"
+#include "dcmi_driver.h"
 #include "i2c_driver.h"
 #include "ov2640.h"
 
@@ -20,7 +20,7 @@ extern "C" {
 #define DSP_CTRL_REG 0x00
 #define SENSOR_CTRL_REG 0x01
 
-class ov2640_dcmi_drv : DCMI_Driver_interface {
+class ov2640_dcmi_drv : DCMI_Driver {
 private:
   ov2640_dcmi_drv() {
     camera_status = CAMERA_ERROR;
@@ -74,4 +74,4 @@ public:
 }
 #endif
 
-#endif /* INC_DCMI_DRIVER_H_ */
+#endif /* INC_OV2640_DCMI_DRV_H_ */
