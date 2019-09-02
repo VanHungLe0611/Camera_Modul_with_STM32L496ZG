@@ -9,7 +9,7 @@ void user_code2() {
   cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
 
   //  BSP_CAMERA_SnapshotStart(image_data);
-  cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER);
+  cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER_INTERN);
 }
 
 void user_code3() {}
