@@ -30,42 +30,51 @@ print("open " + ser.name + "\nbaud: " + str(ser.baudrate) + "\ndata format:" + s
 #####################################################
 # prepare file
 #####################################################
-fileName="image.raw"
-fileRaw=open(fileName,"wb+")
 
 #####################################################
-# pic format config 
+# pic format config
 #####################################################
 picSize160x120=38400
 picSize = picSize160x120
 
+raw_img_postfix = ".raw"
+data_buffer = []
 
+for i in range (1,10):
 #####################################################
 # get data from uart-usb
 #####################################################
-print("reading data...")
-for pixel in range(picSize):
-    test = ser.read()
-    fileRaw.write(test)
+    print("reading data...")
+    picData = []
+    for pixel in range(picSize):
+        bit = ser.read()
+        picData.append(bit)
+    data_buffer.append(picData)
 
-fileRaw.close()
-print('\n'+'Total size: '+str(pixel+1) + ' bytes')
+    print('\n'+'Total size: '+str(len(picData)) + ' bytes')
 
-
+count = 0
+for data in data_buffer:
+    fileName = "image"
+    fileName = fileName + str(++count) + raw_img_postfix
+    fileRaw = open(fileName, "wb+")
+    for bit in data:
+        fileRaw.write(bit)
+    fileRaw.close()
 #####################################################
 # convert raw data
 #####################################################
 # require: installed imagemagick
-command = "convert"
-flags = ["-size 160x120", "-sampling-factor 4:2:2", "-depth 8"]
-inputFormat = "yuv:" + fileName
-outputFile = "image_out.bmp"
+#command = "convert"
+#flags = ["-size 160x120", "-sampling-factor 4:2:2", "-depth 8"]
+#inputFormat = "yuv:" + fileName
+#outputFile = "image_out.bmp"
 
-os.system(command + " " + ' '.join(flags)+ " " + inputFormat + " " + outputFile)
+#os.system(command + " " + ' '.join(flags)+ " " + inputFormat + " " + outputFile)
 
 #####################################################
 # Image open
 #####################################################
-img = Image.open('image_out.bmp')
-img.show()
+#img = Image.open('image_out.bmp')
+#img.show()
 

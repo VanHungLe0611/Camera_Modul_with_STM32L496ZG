@@ -21,9 +21,13 @@ void user_code2() {
 	case CAMERA_OK:
 		//  BSP_CAMERA_SnapshotStart(image_data);
 		cam_driver.CAMERA_Resume();
-		cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER_EXTERN);
+		cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER_INTERN);
 		cam_driver.CAMERA_Stop();
+
+		while(!uart_complete){}
+
 		i++;
+
 		break;
 	case CAMERA_TIMEOUT:
 		SEGGER_RTT_printf(0, "%s\n", "CAMERA_TIME_OUT");

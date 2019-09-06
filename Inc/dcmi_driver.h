@@ -60,6 +60,9 @@ public:
   void CAMERA_IRQHandler(void);
   void CAMERA_DMA_IRQHandler(void);
 
+  void  uart_transmit_complete(void);
+  void  HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
+
   uint32_t GetSize(uint32_t resolution);
 
   /*
