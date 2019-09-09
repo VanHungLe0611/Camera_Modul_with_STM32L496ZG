@@ -51,7 +51,7 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
 
   camera_status = ret;
 #ifdef CAMERA_DEBUG_RTT
-  if (camera_status == CAMERA_ERROR) {
+  if (ret == CAMERA_ERROR) {
     SEGGER_RTT_printf(
         CAMERA_COMMON_DEBUG_RTT_DISABLE,
         "-----------Error: CAMERA cannot initialized correctly----------\n");
@@ -63,8 +63,9 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
                     "Starting camera... (delay for %d ms)\n",
                     CAMERA_DELAY_INTERVAL);
   SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "Done\n");
-  CAMERA_Delay(CAMERA_DELAY_INTERVAL);
+
 #endif
+  CAMERA_Delay(CAMERA_DELAY_INTERVAL);
   return ret;
 }
 
@@ -161,7 +162,7 @@ void ov2640_dcmi_drv::CAMERA_writeRegValue(bool REG_BANK_SEL,
  * @param VALUE
  */
 void ov2640_dcmi_drv::CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) {
-  CAMERA_Delay(1);
+  //CAMERA_Delay(1);
   CAMERA_IO_Write(OV2640_I2C_ADDRESS, REG_ADDRESS, VALUE);
   CAMERA_Delay(1);
 }

@@ -8,7 +8,6 @@ static I2C_HandleTypeDef *hi2c_dcmi;
  */
 void I2Cx_Init() {
 	hi2c_dcmi = &hi2c1;
-	HAL_I2C_Init(hi2c_dcmi);
 }
 
 /**
