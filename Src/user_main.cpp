@@ -43,13 +43,16 @@ void user_code2() {
 
 // user code, which is used for Testing
 void user_code3() {
-	// GPIO_OUT_PUT = HIGH
-	GPIOC->BSRR |= GPIO_BSRR_BS_2;
-	// GPIO_OUT_PUT = LOW
+
+	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_RESET);
+
+
+	/* Function is measured here */
 	while(ov2640_ReadID(OV2640_I2C_ADDRESS) != OV2640_ID){
 		SEGGER_RTT_printf(0,"%s \n", "Camera was not connected");
 	}
-	GPIOC->BSRR |= GPIO_BSRR_BR_2;
+
+	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_SET);
 }
 
 void loop() {
