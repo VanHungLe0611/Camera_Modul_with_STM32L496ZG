@@ -13,10 +13,11 @@ void user_code2() {
 
 	/* GPIOC & PIN 2 to measure execution time of CAMERA_Init function*/
 	//	GPIOC->BSRR |= GPIO_BSRR_BS_2; // GPIO_OUT_PUT = HIGH
-	uint32_t time = HAL_GetTick();
+
 	Camera_StatusTypeDef cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
 	//	GPIOC->BSRR |= GPIO_BSRR_BR_2; // GPIO_OUT_PUT = LOW
-    while(i < 3)
+
+    while(i < 5)
 	switch (cam_status) {
 	case CAMERA_OK:
 		//  BSP_CAMERA_SnapshotStart(image_data);
@@ -25,7 +26,7 @@ void user_code2() {
 		cam_driver.CAMERA_Stop();
 
 		while(!uart_complete){}
-
+		uart_complete = 0;
 		i++;
 
 		break;
@@ -39,11 +40,16 @@ void user_code2() {
 
 }
 
+
+// user code, which is used for Testing
 void user_code3() {
-	GPIO_PinState pin_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3);
-	while (pin_state == GPIO_PIN_RESET) {}
-	user_code2();
-	SEGGER_RTT_printf(0, "%s\n", "MOSFES ON");
+	// GPIO_OUT_PUT = HIGH
+	GPIOC->BSRR |= GPIO_BSRR_BS_2;
+	// GPIO_OUT_PUT = LOW
+	while(ov2640_ReadID(OV2640_I2C_ADDRESS) != OV2640_ID){
+		SEGGER_RTT_printf(0,"%s \n", "Camera was not connected");
+	}
+	GPIOC->BSRR |= GPIO_BSRR_BR_2;
 }
 
 void loop() {

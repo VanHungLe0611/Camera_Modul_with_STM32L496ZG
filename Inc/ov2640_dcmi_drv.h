@@ -16,15 +16,15 @@ extern "C" {
 #include "i2c_dcmi_driver.h"
 #include "ov2640.h"
 
-#define CAMERA_OV2640_I2C_ADDRESS 0x60
-#define DSP_CTRL_REG 0x00
-#define SENSOR_CTRL_REG 0x01
+
+// #define DSP_CTRL_REG 0x00
+// #define SENSOR_CTRL_REG 0x01
 
 class ov2640_dcmi_drv : public DCMI_Driver{
 private:
   ov2640_dcmi_drv() {
     camera_status = CAMERA_ERROR;
-    camera_i2c_addr = CAMERA_OV2640_I2C_ADDRESS;
+    camera_i2c_addr = OV2640_I2C_ADDRESS;
   }
   ov2640_dcmi_drv(const ov2640_dcmi_drv &);
   ov2640_dcmi_drv &operator=(const ov2640_dcmi_drv &);

@@ -40,7 +40,10 @@ picSize = picSize160x120
 raw_img_postfix = ".raw"
 data_buffer = []
 
-for i in range (1,10):
+print ("Enter number of frame, you want to convert: ")
+num_pics = int(input())
+
+for i in range (0,num_pics):
 #####################################################
 # get data from uart-usb
 #####################################################
@@ -56,25 +59,35 @@ for i in range (1,10):
 count = 0
 for data in data_buffer:
     fileName = "image"
-    fileName = fileName + str(++count) + raw_img_postfix
+    count +=1;
+    fileName = fileName + str(count) + raw_img_postfix
     fileRaw = open(fileName, "wb+")
     for bit in data:
         fileRaw.write(bit)
     fileRaw.close()
+
 #####################################################
 # convert raw data
 #####################################################
 # require: installed imagemagick
-#command = "convert"
-#flags = ["-size 160x120", "-sampling-factor 4:2:2", "-depth 8"]
-#inputFormat = "yuv:" + fileName
-#outputFile = "image_out.bmp"
 
-#os.system(command + " " + ' '.join(flags)+ " " + inputFormat + " " + outputFile)
+#print ("Enter number of frame, you want to convert: ")
+#num_pics = int(input())
 
+command = "convert"
+raw_img_postfix = ".raw"
+bmp_img_postfix = ".bmp"
+fileName = "image"
+outputName = "image_out"
+flags = ["-size 160x120", "-sampling-factor 4:2:2", "-depth 8"]
+for i in range (0, num_pics):
+    inputfile = "yuv:" + fileName + str(i+1) + raw_img_postfix
+    outputFile = outputName +  str(i+1) + bmp_img_postfix
+
+    os.system(command + " " + ' '.join(flags)+ " " + inputfile + " " + outputFile)
+    print( inputfile + " => " + outputFile + " \n")
 #####################################################
 # Image open
 #####################################################
-#img = Image.open('image_out.bmp')
-#img.show()
-
+    img = Image.open(outputFile)
+    img.show()

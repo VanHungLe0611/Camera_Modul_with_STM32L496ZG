@@ -21,18 +21,18 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
   /* DCMI Initialization */
   // HAL_DCMI_Init(&hdcmi); //TODO: do we need this?
 
-  if (ov2640_ReadID(camera_i2c_addr) == OV2640_ID) {
+  if (ov2640_ReadID(OV2640_I2C_ADDRESS) == OV2640_ID) {
     /* Initialize the camera driver structure */
     camera = &ov2640_drv;
 
     /* Camera Init */
-    camera->Init(camera_i2c_addr, Resolution);
+    camera->Init(OV2640_I2C_ADDRESS, Resolution);
 
     /* specific default settings */
     if (IMAGE_BANDFILTER_ENABLE) {
-      CAMERA_writeRegValue(DSP_CTRL_REG, 0x13, 0xc5); // activate band filter
+      CAMERA_writeRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, 0x13, 0xc5); // activate band filter
     } else {
-      CAMERA_writeRegValue(DSP_CTRL_REG, 0x13, 0xe5); // deactivate band
+      CAMERA_writeRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, 0x13, 0xe5); // deactivate band
     }
     CAMERA_setOutputFormat(IMAGE_DEFAULT_FORMAT);
     CAMERA_BlackWhiteConfig(CAMERA_DEFAULT_COLORMODE);
@@ -143,10 +143,10 @@ uint8_t ov2640_dcmi_drv::CAMERA_readRegValue(uint8_t REG_ADDRESS) {
  */
 void ov2640_dcmi_drv::CAMERA_writeRegValue(bool REG_BANK_SEL,
                                            uint8_t REG_ADDRESS, uint8_t VALUE) {
-  if (REG_BANK_SEL == SENSOR_CTRL_REG) {
+  if (REG_BANK_SEL == OV2640_RDSP_RA_DLMT_SEL_SENSOR) {
     CAMERA_IO_Write(OV2640_I2C_ADDRESS, OV2640_DSP_RA_DLMT,
                     OV2640_RDSP_RA_DLMT_SEL_SENSOR);
-  } else if (REG_BANK_SEL == DSP_CTRL_REG) {
+  } else if (REG_BANK_SEL == OV2640_RDSP_RA_DLMT_SEL_DSP) {
     CAMERA_IO_Write(OV2640_I2C_ADDRESS, OV2640_DSP_RA_DLMT,
                     OV2640_RDSP_RA_DLMT_SEL_DSP);
   }
@@ -173,7 +173,7 @@ void ov2640_dcmi_drv::CAMERA_factoryReset(void) {
   CAMERA_IO_Write(camera_i2c_addr, OV2640_DSP_RA_DLMT,
                   OV2640_RDSP_RA_DLMT_SEL_DSP);
   CAMERA_Delay(1);
-  CAMERA_writeRegValue(SENSOR_CTRL_REG, OV2640_SENSOR_COM7,
+  CAMERA_writeRegValue(OV2640_RDSP_RA_DLMT_SEL_SENSOR, OV2640_SENSOR_COM7,
                        0x80); // reset all registers
   CAMERA_Delay(1);
 }
@@ -184,15 +184,15 @@ void ov2640_dcmi_drv::CAMERA_setOutputFormat(uint8_t format) {
     // TODO: JPEG
     break;
   case IMAGE_OUTPUT_FORMAT_RAW10:
-    CAMERA_writeRegValue(DSP_CTRL_REG, OV2640_DSP_IMAGE_MODE,
+    CAMERA_writeRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, OV2640_DSP_IMAGE_MODE,
                          0x04); // enable RAW10-format
     break;
   case IMAGE_OUTPUT_FORMAT_RBG565:
-    CAMERA_writeRegValue(DSP_CTRL_REG, OV2640_DSP_IMAGE_MODE,
+    CAMERA_writeRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, OV2640_DSP_IMAGE_MODE,
                          0x08); // enable RGB565-format
     break;
   case IMAGE_OUTPUT_FORMAT_YUV422:
-    CAMERA_writeRegValue(DSP_CTRL_REG, OV2640_DSP_IMAGE_MODE,
+    CAMERA_writeRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, OV2640_DSP_IMAGE_MODE,
                          0x01); // enable YCBCR-format
     break;
   default:

@@ -167,7 +167,7 @@ void DCMI_Driver::CAMERA_FrameEventCallback(void) {
 	__HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_FRAME);
 	HAL_StatusTypeDef res;
 	do{
-	res = HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER_EXTERN, IMAGE_SIZE); // transfer data into sram
+	res = HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER_INTERN, IMAGE_SIZE); // transfer data into sram
 	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
 				"Sending data through UART\n");
 	} while(res != HAL_OK);
