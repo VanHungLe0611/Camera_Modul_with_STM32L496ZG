@@ -1,4 +1,5 @@
 #include "dcmi_driver.h"
+#include "stm32l4xx_hal.h"
 
 // TODO: do we need this?
 /**
@@ -26,6 +27,7 @@ void DCMI_Driver::CAMERA_ContinuousStart(uint8_t *buff) {
 void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 	/* Start the camera capture */
 	lineNum = 0;
+        measured_time = HAL_GetTick();
 	__HAL_DCMI_ENABLE_IT(&hdcmi, DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
@@ -176,6 +178,8 @@ void DCMI_Driver::CAMERA_FrameEventCallback(void) {
 	SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "Frame captured event\n");
 	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
 			"Frame captured, sending image...\n");
+        /* endmeasuring frame time (start measuring in snapshot functiostart measuring in snapshot functionn)*/
+        SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE, "**************FRAME CAPTURE TIME %d ************\n", HAL_GetTick()-measured_time);
 #endif
 }
 

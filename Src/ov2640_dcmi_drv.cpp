@@ -7,6 +7,7 @@
 
 #include "ov2640_dcmi_drv.h"
 #include "../SEGGER/RTT/SEGGER_RTT.h"
+#include "stm32l4xx_hal.h"
 
 // CAMERA_DrvTypeDef *camera;
 
@@ -17,6 +18,9 @@
  */
 Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
   Camera_StatusTypeDef ret = CAMERA_ERROR;
+
+  /* start measuring time */
+  measured_time = HAL_GetTick();
 
   /* DCMI Initialization */
   // HAL_DCMI_Init(&hdcmi); //TODO: do we need this?
@@ -63,6 +67,9 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
                     "Starting camera... (delay for %d ms)\n",
                     CAMERA_DELAY_INTERVAL);
   SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "Done\n");
+
+  /* end measuring time */
+  SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE, "************** Register Init TIME %d ************\n", HAL_GetTick()-measured_time);
 
 #endif
   CAMERA_Delay(CAMERA_DELAY_INTERVAL);

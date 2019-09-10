@@ -59,8 +59,8 @@ DMA_HandleTypeDef hdma_memtomem_dma1_channel1;
 SRAM_HandleTypeDef hsram1;
 
 /* USER CODE BEGIN PV */
-uint8_t image_data[IMAGE_SIZE] = { 0 };
 int uart_complete = 0;
+uint32_t measured_time = 0;
 
 /* USER CODE END PV */
 
