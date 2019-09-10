@@ -10,6 +10,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "ov2640.h"
+#include "dwt_stm32_delay.h"
 
 /** @addtogroup BSP
  * @{
@@ -406,14 +407,14 @@ void ov2640_Init(uint16_t DeviceAddr, uint32_t resolution) {
 	/* Prepare the camera to be configured */
 	CAMERA_IO_Write(DeviceAddr, OV2640_DSP_RA_DLMT, 0x01);
 	CAMERA_IO_Write(DeviceAddr, OV2640_SENSOR_COM7, 0x80);
-	CAMERA_Delay(1);
+	CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
 	/* Initialize OV2640 */
 	switch (resolution) {
 	case CAMERA_R160x120: {
 		for (index = 0; index < (sizeof(OV2640_QQVGA) / 2); index++) {
 			CAMERA_IO_Write(DeviceAddr, OV2640_QQVGA[index][0],
 					OV2640_QQVGA[index][1]);
-			CAMERA_Delay(1);
+			CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
 		}
 		break;
 	}
@@ -421,7 +422,7 @@ void ov2640_Init(uint16_t DeviceAddr, uint32_t resolution) {
 		for (index = 0; index < (sizeof(OV2640_QVGA) / 2); index++) {
 			CAMERA_IO_Write(DeviceAddr, OV2640_QVGA[index][0],
 					OV2640_QVGA[index][1]);
-			CAMERA_Delay(1);
+			CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
 		}
 		break;
 	}
@@ -429,7 +430,7 @@ void ov2640_Init(uint16_t DeviceAddr, uint32_t resolution) {
 		for (index = 0; index < (sizeof(OV2640_480x272) / 2); index++) {
 			CAMERA_IO_Write(DeviceAddr, OV2640_480x272[index][0],
 					OV2640_480x272[index][1]);
-			CAMERA_Delay(2);
+			CAMERA_Delay_us(CAMERA_DELAY_INTERVAL*2);
 		}
 		break;
 	}
@@ -437,7 +438,7 @@ void ov2640_Init(uint16_t DeviceAddr, uint32_t resolution) {
 		for (index = 0; index < (sizeof(OV2640_VGA) / 2); index++) {
 			CAMERA_IO_Write(DeviceAddr, OV2640_VGA[index][0],
 					OV2640_VGA[index][1]);
-			CAMERA_Delay(2);
+			CAMERA_Delay_us(CAMERA_DELAY_INTERVAL*2);
 		}
 		break;
 	}
@@ -673,10 +674,11 @@ uint8_t CAMERA_IO_Read(uint8_t Addr, uint8_t Reg) {
 
 /**
  * @brief  Camera delay
- * @param  Delay: Delay in ms
+ * @param  Delay: Delay in µs
  */
-void CAMERA_Delay(uint32_t Delay) {
-	HAL_Delay(Delay);
+void CAMERA_Delay_us(uint32_t Delay) {
+	/*HAL_Delay(Delay);*/
+    DWT_Delay_us(Delay);
 }
 
 /**

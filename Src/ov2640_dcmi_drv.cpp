@@ -63,16 +63,15 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
     SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
                       "----------------CAMERA INIT OK-------------\n");
   }
-  SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-                    "Starting camera... (delay for %d ms)\n",
-                    CAMERA_DELAY_INTERVAL);
   SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "Done\n");
 
   /* end measuring time */
   SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE, "************** Register Init TIME %d ************\n", HAL_GetTick()-measured_time);
 
 #endif
-  CAMERA_Delay(CAMERA_DELAY_INTERVAL);
+  int tempTime = HAL_GetTick();
+  CAMERA_Delay_us(CAMERA_INIT_DELAY_MULTIPLICATOR*CAMERA_DELAY_INTERVAL); //delay until camera sensor is ready
+  SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE, "************** Cam Delay TIME %d ************\n", HAL_GetTick()-tempTime);
   return ret;
 }
 
@@ -137,7 +136,7 @@ void ov2640_dcmi_drv::CAMERA_ColorEffectConfig(uint32_t Effect) {
  */
 uint8_t ov2640_dcmi_drv::CAMERA_readRegValue(uint8_t REG_ADDRESS) {
   uint8_t tmp = CAMERA_IO_Read(OV2640_I2C_ADDRESS, REG_ADDRESS);
-  CAMERA_Delay(1);
+  CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
   return tmp;
 }
 
@@ -158,9 +157,9 @@ void ov2640_dcmi_drv::CAMERA_writeRegValue(bool REG_BANK_SEL,
     CAMERA_IO_Write(OV2640_I2C_ADDRESS, OV2640_DSP_RA_DLMT,
                     OV2640_RDSP_RA_DLMT_SEL_DSP);
   }
-  CAMERA_Delay(1);
+  CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
   CAMERA_IO_Write(OV2640_I2C_ADDRESS, REG_ADDRESS, VALUE);
-  CAMERA_Delay(1);
+  CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
 }
 
 /** @brief write control signal to camera module  registers, false when choosing
@@ -169,9 +168,9 @@ void ov2640_dcmi_drv::CAMERA_writeRegValue(bool REG_BANK_SEL,
  * @param VALUE
  */
 void ov2640_dcmi_drv::CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) {
-  //CAMERA_Delay(1);
+  //CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
   CAMERA_IO_Write(OV2640_I2C_ADDRESS, REG_ADDRESS, VALUE);
-  CAMERA_Delay(1);
+  CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
 }
 
 /**
@@ -180,10 +179,10 @@ void ov2640_dcmi_drv::CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) {
 void ov2640_dcmi_drv::CAMERA_factoryReset(void) {
   CAMERA_IO_Write(camera_i2c_addr, OV2640_DSP_RA_DLMT,
                   OV2640_RDSP_RA_DLMT_SEL_DSP);
-  CAMERA_Delay(1);
+  CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
   CAMERA_writeRegValue(OV2640_RDSP_RA_DLMT_SEL_SENSOR, OV2640_SENSOR_COM7,
                        0x80); // reset all registers
-  CAMERA_Delay(1);
+  CAMERA_Delay_us(CAMERA_DELAY_INTERVAL);
 }
 
 void ov2640_dcmi_drv::CAMERA_setOutputFormat(uint8_t format) {

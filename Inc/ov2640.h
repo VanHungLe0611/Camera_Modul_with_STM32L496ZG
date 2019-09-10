@@ -49,6 +49,7 @@ extern "C" {
 #include "camera.h"
 #include "stm32l4xx_hal.h"
 #include "dwt_stm32_delay.h"
+#include "var_interface.h"
 
 /** @addtogroup BSP
  * @{
@@ -471,7 +472,7 @@ uint16_t ov2640_ReadID(uint16_t DeviceAddr);
 void CAMERA_IO_Init(void);
 HAL_StatusTypeDef CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);
 uint8_t CAMERA_IO_Read(uint8_t addr, uint8_t reg);
-void CAMERA_Delay(uint32_t delay);
+void CAMERA_Delay_us(uint32_t delay);
 
 /* CAMERA driver structure */
 extern CAMERA_DrvTypeDef ov2640_drv;

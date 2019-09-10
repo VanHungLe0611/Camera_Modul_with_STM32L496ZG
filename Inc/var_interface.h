@@ -28,7 +28,12 @@ extern uint8_t image_data[];
 static uint32_t lineNum;
 
 /* CAMERA GLOBAL SETTING */
-#define CAMERA_DELAY_INTERVAL 15 // ms - This also affect image quality
+/* -------Troublesshooting---------:
+ * no output image? -> increase CAMERA_INIT_DELAY_MULTIPLICATOR or CAMERA_DELAY_INTERVAL
+ * bad image -> increase CAMERA_DELAY_INTERVAL
+ * */
+#define CAMERA_DELAY_INTERVAL 200 // in µs -  NO OUTPUT or BAD IMAGE if this is too low
+#define CAMERA_INIT_DELAY_MULTIPLICATOR 200 // increase this value if NO OUTPUT picture received
 #define IMAGE_RESOLUTION CAMERA_R160x120
 #define IMAGE_SIZE CAMERA_R160x120_COLOR_MEMSIZE
 #define IMAGE_BANDFILTER_ENABLE 1
