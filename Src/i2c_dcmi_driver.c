@@ -16,7 +16,7 @@ void I2Cx_Init() {
  * @param  Reg: Register address
  * @param  Value: Data to be written
  */
-void I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
+HAL_StatusTypeDef I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
 	HAL_StatusTypeDef status = HAL_OK;
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE,
@@ -32,6 +32,7 @@ void I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
 		/* Execute user timeout callback */
 		I2Cx_Error(Addr);
 	}
+	return status;
 }
 
 /**

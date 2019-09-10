@@ -22,6 +22,7 @@ extern DMA_HandleTypeDef hdma_dcmi;
 extern DCMI_HandleTypeDef hdcmi;
 extern UART_HandleTypeDef huart5;
 extern DMA_HandleTypeDef hdma_memtomem_dma1_channel1;
+extern TIM_HandleTypeDef htim2;
 
 extern uint8_t image_data[];
 static uint32_t lineNum;
@@ -38,10 +39,10 @@ static uint32_t lineNum;
 #define CAMERA_BUFFER_INTERN (uint8_t*) 0x20008000  // data address for internal sram
 
 /*RTT debug activation*/
-#define CAMERA_DEBUG_RTT  // toggle comment this line for debug
-#define CAMERA_COMMON_DEBUG_RTT_DISABLE 1
-#define CAMERA_I2C_DEBUG_RTT_DISABLE 1
-#define CAMERA_EVENT_DEBUG_RTT_DISABLE 1
+#define CAMERA_DEBUG_RTT  0// toggle comment this line for debug
+#define CAMERA_COMMON_DEBUG_RTT_DISABLE 0
+#define CAMERA_I2C_DEBUG_RTT_DISABLE 0
+#define CAMERA_EVENT_DEBUG_RTT_DISABLE 0
 
 
 /*global flag for uart */

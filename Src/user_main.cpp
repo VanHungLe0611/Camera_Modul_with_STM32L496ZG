@@ -1,5 +1,6 @@
 #include "user_main.h"
 #include "ov2640_dcmi_drv.h"
+#include "dwt_stm32_delay.h"
 
 void user_code1() {
 }
@@ -43,16 +44,22 @@ void user_code2() {
 // user code, which is used for Testing
 void user_code3() {
 
-	ov2640_dcmi_drv &cam_driver = ov2640_dcmi_drv::instance();
-	Camera_StatusTypeDef cam_status;
+	uint32_t count = 0;
 	while (1) {
+
+
 		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_RESET);
 
 		/* Function is measured here */
-		cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
-
+		// delayUS(1680);
+		//HAL_Delay(1);
+		DWT_Delay_us(1680);
 		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_SET);
 	}
+}
+
+void HAL_TIM_PeriodElapsedCallback(){
+
 }
 
 void loop() {
