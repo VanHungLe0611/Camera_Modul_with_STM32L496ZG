@@ -5,6 +5,9 @@
 /**
  * @brief  Initializes the camera hardware
  */
+
+uint8_t first_image = 1;
+
 void DCMI_Driver::CAMERA_MsInit(void) {
 	HAL_DCMI_MspInit(&hdcmi);
 }
@@ -26,15 +29,20 @@ void DCMI_Driver::CAMERA_ContinuousStart(uint8_t *buff) {
  */
 void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 	/* Start the camera capture */
-	lineNum = 0;
-        measured_time = HAL_GetTick();
-	__HAL_DCMI_ENABLE_IT(&hdcmi, DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
+
 #ifdef CAMERA_DEBUG_RTT
+	lineNum = 0;
+	measured_time = HAL_GetTick();
 	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
 			"Start taking a snapshot image\n");
 #endif
+
+	// enable IT of DCMI
+	__HAL_DCMI_ENABLE_IT(&hdcmi, DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
+
 	HAL_StatusTypeDef res = HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_SNAPSHOT,
 			(uint32_t) buff, GetSize(current_resolution));
+
 #ifdef CAMERA_DEBUG_RTT
 	switch (res) {
 	case HAL_OK:
@@ -49,7 +57,6 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 			SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
 					"dcmi start DMA time out \n");
 			break;
-
 	}
 #endif
 
@@ -143,7 +150,6 @@ uint32_t DCMI_Driver::GetSize(uint32_t resolution) {
 	return size;
 }
 
-
 void DCMI_Driver::CAMERA_LineEventCallback(void) {
 	__HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_LINE);
 	lineNum++;
@@ -162,17 +168,26 @@ void DCMI_Driver::CAMERA_VsyncEventCallback(void) {
 			"--Total line read: %d\n", lineNum);
 #endif
 	lineNum = 0;
-	// TODO: send image over UART for preview in pc
 }
 
 void DCMI_Driver::CAMERA_FrameEventCallback(void) {
 	__HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_FRAME);
 	HAL_StatusTypeDef res;
-	do{
-	res = HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER_INTERN, IMAGE_SIZE); // transfer data into sram
-	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-				"Sending data through UART\n");
-	} while(res != HAL_OK);
+	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_SET);
+	if (first_image) {
+		first_image = 0;
+		uart_complete = 1;
+		DWT_Delay_us(3 * 1000 * 100);
+	} else {
+		do {
+			res = HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER_INTERN,
+			IMAGE_SIZE); // transfer data into sram
+#ifdef CAMERA_DEBUG_RTT
+			SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
+					"Sending data through UART\n");
+#endif
+		} while (res != HAL_OK);
+	}
 
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "Frame captured event\n");
@@ -240,7 +255,7 @@ void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi) {
 	DCMI_Driver::CAMERA_ErrorCallback();
 }
 
-void  HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 	uart_complete = 1;
 }
 

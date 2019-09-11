@@ -67,11 +67,14 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
 
   /* end measuring time */
   SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE, "************** Register Init TIME %d ************\n", HAL_GetTick()-measured_time);
-
-#endif
   int tempTime = HAL_GetTick();
+#endif
+
   CAMERA_Delay_us(CAMERA_INIT_DELAY_MULTIPLICATOR*CAMERA_DELAY_INTERVAL); //delay until camera sensor is ready
+
+#ifdef CAMERA_DEBUG_RTT
   SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE, "************** Cam Delay TIME %d ************\n", HAL_GetTick()-tempTime);
+#endif
   return ret;
 }
 

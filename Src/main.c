@@ -120,7 +120,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  user_code2();
+   user_code2();
 
   /* USER CODE END 2 */
 
@@ -128,7 +128,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1) {
 
-	//   user_code3();
+//	 user_code3();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

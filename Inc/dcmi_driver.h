@@ -16,6 +16,7 @@ extern "C" {
 #include "camera.h"
 #include "stm32l4xx_hal.h"
 #include "var_interface.h"
+#include "dwt_stm32_delay.h"
 
 /* Macro for CAMERA_read-/writeRegVal functions */
 #define IMAGE_OUTPUT_FORMAT_YUV422 0x00

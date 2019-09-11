@@ -32,7 +32,7 @@ static uint32_t lineNum;
  * no output image? -> increase CAMERA_INIT_DELAY_MULTIPLICATOR or CAMERA_DELAY_INTERVAL
  * bad image -> increase CAMERA_DELAY_INTERVAL
  * */
-#define CAMERA_DELAY_INTERVAL 200 // in µs -  NO OUTPUT or BAD IMAGE if this is too low
+#define CAMERA_DELAY_INTERVAL 200 // in us -  NO OUTPUT or BAD IMAGE if this is too low
 #define CAMERA_INIT_DELAY_MULTIPLICATOR 200 // increase this value if NO OUTPUT picture received
 #define IMAGE_RESOLUTION CAMERA_R160x120
 #define IMAGE_SIZE CAMERA_R160x120_COLOR_MEMSIZE
@@ -44,10 +44,14 @@ static uint32_t lineNum;
 #define CAMERA_BUFFER_INTERN (uint8_t*) 0x20008000  // data address for internal sram
 
 /*RTT debug activation*/
-#define CAMERA_DEBUG_RTT  0// toggle comment this line for debug
+
+// comment this line to disable debug
+
+//#define CAMERA_DEBUG_RTT
+
 #define CAMERA_COMMON_DEBUG_RTT_DISABLE 0
 #define CAMERA_I2C_DEBUG_RTT_DISABLE 1
-#define CAMERA_EVENT_DEBUG_RTT_DISABLE 1
+#define CAMERA_EVENT_DEBUG_RTT_DISABLE 0
 #define CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE 0
 
 

@@ -8,17 +8,15 @@ void user_code1() {
 
 void user_code2() {
 
-	//  BSP_CAMERA_Init(IMAGE_RESOLUTION)
-	// init camera
+	// get instance of camera
 	ov2640_dcmi_drv &cam_driver = ov2640_dcmi_drv::instance();
-	int i = 0;
-
-	/* GPIOC & PIN 2 to measure execution time of CAMERA_Init function*/
-	//	GPIOC->BSRR |= GPIO_BSRR_BS_2; // GPIO_OUT_PUT = HIGH
+	// init camera
 	Camera_StatusTypeDef cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
-	//	GPIOC->BSRR |= GPIO_BSRR_BR_2; // GPIO_OUT_PUT = LOW
 
-	while (i < 5)
+
+	uint8_t count = 0;
+
+	while (count < 5){
 		switch (cam_status) {
 		case CAMERA_OK:
 			//  BSP_CAMERA_SnapshotStart(image_data);
@@ -29,7 +27,7 @@ void user_code2() {
 			while (!uart_complete) {
 			}
 			uart_complete = 0;
-			i++;
+			count++;
 
 			break;
 		case CAMERA_TIMEOUT:
@@ -40,26 +38,46 @@ void user_code2() {
 			break;
 		}
 
+	}
 }
 
-// user code, which is used for Testing
+/* user code to test execution time of function */
 void user_code3() {
 
-	uint32_t count = 0;
 	while (1) {
 
+		/*Testing turn on and turn of  camera */
+
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_SET);
+//
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_RESET);
 
 		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_RESET);
 
 		/* Function is measured here */
-		// delayUS(1680);
-		//HAL_Delay(1);
-		DWT_Delay_us(1680);
+
+		/* Testing Camera On Time*/
+//		while (ov2640_ReadID(OV2640_I2C_ADDRESS) != OV2640_ID);
+
+		/* Testing delay function of TIM, DWT and HAL_Delay*/
+//		delayUS(1680);
+//		HAL_Delay(1);
+//		DWT_Delay_us(1680);
+
+		/* Testing Camera Init Time*/
+//		Camera_StatusTypeDef cam_status;
+//		ov2640_dcmi_drv &cam_driver = ov2640_dcmi_drv::instance();
+//		do {
+//			cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
+//		} while (cam_status != HAL_OK);
+//
+
 		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_SET);
+
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(){
+void HAL_TIM_PeriodElapsedCallback() {
 
 }
 
