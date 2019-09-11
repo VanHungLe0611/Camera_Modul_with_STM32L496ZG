@@ -677,7 +677,6 @@ uint8_t CAMERA_IO_Read(uint8_t Addr, uint8_t Reg) {
  * @param  Delay: Delay in µs
  */
 void CAMERA_Delay_us(uint32_t Delay) {
-	/*HAL_Delay(Delay);*/
     DWT_Delay_us(Delay);
 }
 

@@ -12,14 +12,14 @@ void user_code2() {
 	ov2640_dcmi_drv &cam_driver = ov2640_dcmi_drv::instance();
 	// init camera
 	Camera_StatusTypeDef cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
-
+	// camera calibration lightroom delay time
+	CAMERA_Delay_us(CAMERA_LIGHTROOM_CALIBRATION_DELAY);
 
 	uint8_t count = 0;
 
-	while (count < 5){
+	while (count < 5) {
 		switch (cam_status) {
 		case CAMERA_OK:
-			//  BSP_CAMERA_SnapshotStart(image_data);
 			cam_driver.CAMERA_Resume();
 			cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER_INTERN);
 			cam_driver.CAMERA_Stop();
@@ -58,7 +58,6 @@ void user_code3() {
 
 		/* Testing Camera On Time*/
 //		while (ov2640_ReadID(OV2640_I2C_ADDRESS) != OV2640_ID);
-
 		/* Testing delay function of TIM, DWT and HAL_Delay*/
 //		delayUS(1680);
 //		HAL_Delay(1);
@@ -70,15 +69,10 @@ void user_code3() {
 //		do {
 //			cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
 //		} while (cam_status != HAL_OK);
-//
 
 		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_SET);
 
 	}
-}
-
-void HAL_TIM_PeriodElapsedCallback() {
-
 }
 
 void loop() {

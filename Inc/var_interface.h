@@ -34,6 +34,8 @@ static uint32_t lineNum;
  * */
 #define CAMERA_DELAY_INTERVAL 200 // in us -  NO OUTPUT or BAD IMAGE if this is too low
 #define CAMERA_INIT_DELAY_MULTIPLICATOR 200 // increase this value if NO OUTPUT picture received
+#define CAMERA_LIGHTROOM_CALIBRATION_DELAY 891500 // in us
+
 #define IMAGE_RESOLUTION CAMERA_R160x120
 #define IMAGE_SIZE CAMERA_R160x120_COLOR_MEMSIZE
 #define IMAGE_BANDFILTER_ENABLE 1

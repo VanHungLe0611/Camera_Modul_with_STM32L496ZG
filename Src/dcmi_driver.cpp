@@ -5,9 +5,6 @@
 /**
  * @brief  Initializes the camera hardware
  */
-
-uint8_t first_image = 1;
-
 void DCMI_Driver::CAMERA_MsInit(void) {
 	HAL_DCMI_MspInit(&hdcmi);
 }
@@ -171,23 +168,18 @@ void DCMI_Driver::CAMERA_VsyncEventCallback(void) {
 }
 
 void DCMI_Driver::CAMERA_FrameEventCallback(void) {
+
 	__HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_FRAME);
 	HAL_StatusTypeDef res;
-	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_SET);
-	if (first_image) {
-		first_image = 0;
-		uart_complete = 1;
-		DWT_Delay_us(3 * 1000 * 100);
-	} else {
-		do {
-			res = HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER_INTERN,
-			IMAGE_SIZE); // transfer data into sram
+	do {
+		// transfer data from sram to host
+		res = HAL_UART_Transmit_DMA(&huart5, CAMERA_BUFFER_INTERN,
+		IMAGE_SIZE);
 #ifdef CAMERA_DEBUG_RTT
 			SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
 					"Sending data through UART\n");
 #endif
-		} while (res != HAL_OK);
-	}
+	} while (res != HAL_OK);
 
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_EVENT_DEBUG_RTT_DISABLE, "Frame captured event\n");
