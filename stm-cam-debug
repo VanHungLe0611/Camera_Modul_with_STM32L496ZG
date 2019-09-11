@@ -1,0 +1,7 @@
+#/bin/bash
+tmux new-window "arm-none-eabi-gdb -x .gdbinit"
+tmux rename-window 'stm-debug'
+tmux splitw -h -p 40 "sleep 1 && telnet localhost 19021"
+tmux splitw -v -p 50 "stm-debug-server"
+tmux splitw -v -p 50 "python genImg.py && display image_out.bmp"
+tmux selectp -t 3
