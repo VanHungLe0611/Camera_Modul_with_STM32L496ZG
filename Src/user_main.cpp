@@ -17,28 +17,19 @@ void user_code2() {
 
 	uint8_t count = 0;
 
-	while (count < 5) {
-		switch (cam_status) {
-		case CAMERA_OK:
-			cam_driver.CAMERA_Resume();
-			cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER_INTERN);
-			cam_driver.CAMERA_Stop();
+	switch (cam_status) {
+	case CAMERA_OK:
+		cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER_INTERN);
 
-			while (!uart_complete) {
-			}
-			uart_complete = 0;
-			count++;
-
-			break;
-		case CAMERA_TIMEOUT:
-			SEGGER_RTT_printf(0, "%s\n", "CAMERA_TIME_OUT");
-			break;
-		case CAMERA_ERROR:
-			SEGGER_RTT_printf(0, "%s\n", "CAMERA_ERROR");
-			break;
-		}
-
+		break;
+	case CAMERA_TIMEOUT:
+		SEGGER_RTT_printf(0, "%s\n", "CAMERA_TIME_OUT");
+		break;
+	case CAMERA_ERROR:
+		SEGGER_RTT_printf(0, "%s\n", "CAMERA_ERROR");
+		break;
 	}
+
 }
 
 /* user code to test execution time of function */
@@ -51,7 +42,6 @@ void user_code3() {
 //		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_SET);
 //
 //		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_RESET);
-
 		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_RESET);
 
 		/* Function is measured here */
@@ -62,14 +52,12 @@ void user_code3() {
 //		delayUS(1680);
 //		HAL_Delay(1);
 //		DWT_Delay_us(1680);
-
 		/* Testing Camera Init Time*/
 //		Camera_StatusTypeDef cam_status;
 //		ov2640_dcmi_drv &cam_driver = ov2640_dcmi_drv::instance();
 //		do {
 //			cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
 //		} while (cam_status != HAL_OK);
-
 		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_12, GPIO_PIN_SET);
 
 	}
