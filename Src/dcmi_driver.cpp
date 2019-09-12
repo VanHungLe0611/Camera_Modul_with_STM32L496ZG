@@ -6,9 +6,6 @@
  * @brief  Initializes the camera hardware
  */
 
-#define IMG_SIZE_TEMP 160*120*2
-#define NUM_IMG 8
-
 uint8_t imgBuff[IMG_SIZE_TEMP * NUM_IMG];
 
 uint8_t captureCmplt = 0;
@@ -37,7 +34,6 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 
 	/* Start the camera capture */
 
-	uint8_t *tempAddr;
 	uint8_t count = 0;
 	HAL_StatusTypeDef res;
 
@@ -48,14 +44,19 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 		__HAL_DCMI_ENABLE_IT(&hdcmi,
 				DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
 
-		res = HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_SNAPSHOT,
-				(uint32_t) &imgBuff[count * IMG_SIZE_TEMP],
-				GetSize(current_resolution));
+		uint32_t imgSize = GetSize(current_resolution);
+
+		uint32_t nextElem = count * IMG_SIZE_TEMP;
+
+		uint32_t tempAddr = (uint32_t) &imgBuff[nextElem];
+
+		res = HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_SNAPSHOT, tempAddr, imgSize);
 
 		while (!captureCmplt) {
 		}
 
 		CAMERA_Stop();
+		HAL_Delay(1000);
 		count++;
 		captureCmplt = 0;
 
@@ -63,14 +64,50 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 
 	count = 0;
 
+	uint32_t imgMemSize = IMAGE_MEMSIZE_IN_BYTE;
+
 	while (count < NUM_IMG) {
 		// transfer data from sram to host
-		res = HAL_UART_Transmit_DMA(&huart5,  &imgBuff[count * IMG_SIZE_TEMP],
-		IMAGE_MEMSIZE_IN_BYTE);
-		while (!uartCmplt) {
+
+		if (imgMemSize < DMA_MAX_TRANFER_DATA) {
+			res = HAL_UART_Transmit_DMA(&huart5,
+					&imgBuff[count * IMG_SIZE_TEMP],
+					IMAGE_MEMSIZE_IN_BYTE);
+			while (!uartCmplt) {
+			}
+			count++;
+			uartCmplt = 0;
+		} else {
+
+			uint32_t index = count * IMG_SIZE_TEMP;
+
+			do {
+				res = HAL_UART_Transmit_DMA(&huart5,
+						&imgBuff[index],
+						DMA_MAX_TRANFER_DATA);
+				while (!uartCmplt) {
+				}
+				uartCmplt = 0;
+
+
+				//index += 45055;  // DMA_MAX_TRANFER_DATA = 0xAFFF = 45055
+				index += 65535;
+
+				imgMemSize -= DMA_MAX_TRANFER_DATA;
+
+				if (imgMemSize < DMA_MAX_TRANFER_DATA) {
+					res = HAL_UART_Transmit_DMA(&huart5,
+							&imgBuff[index], imgMemSize);
+					while (!uartCmplt) {
+					}
+					uartCmplt = 0;
+					count++;
+					break;
+				}
+
+			} while (imgMemSize != 0);
+			imgMemSize = IMAGE_MEMSIZE_IN_BYTE;
 		}
-		count++;
-		uartCmplt = 0;
 	}
 }
 
