@@ -6,8 +6,6 @@
  * @brief  Initializes the camera hardware
  */
 
-uint8_t imgBuff[IMG_SIZE_TEMP * NUM_IMG];
-
 uint8_t captureCmplt = 0;
 uint8_t uartCmplt = 0;
 
@@ -23,19 +21,25 @@ void DCMI_Driver::CAMERA_MsInit(void) {
 void DCMI_Driver::CAMERA_ContinuousStart(uint8_t *buff) {
 	/* Start the camera capture */
 	HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t) buff,
-			GetSize(current_resolution));
+			GetSizeInWord(current_resolution));
 }
 
 /**
  * @brief  Starts the camera capture in snapshot mode.
  * @param  buff: pointer to the camera output buffer
  */
-void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
+void DCMI_Driver::CAMERA_SnapshotStart(uint8_t imgNum) {
 
 	/* Start the camera capture */
 
 	uint8_t count = 0;
 	HAL_StatusTypeDef res;
+
+	uint32_t imgMemSize = GetSizeInByte(current_resolution, COLOR_IMG);
+
+
+	uint8_t imgBuff[imgMemSize * NUM_IMG];
+
 
 	while (count < NUM_IMG) {
 
@@ -44,9 +48,9 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 		__HAL_DCMI_ENABLE_IT(&hdcmi,
 				DCMI_IT_FRAME | DCMI_IT_LINE | DCMI_IT_VSYNC);
 
-		uint32_t imgSize = GetSize(current_resolution);
+		uint32_t imgSize = GetSizeInWord(current_resolution);
 
-		uint32_t nextElem = count * IMG_SIZE_TEMP;
+		uint32_t nextElem = count * imgMemSize;
 
 		uint32_t tempAddr = (uint32_t) &imgBuff[nextElem];
 
@@ -64,51 +68,36 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t *buff) {
 
 	count = 0;
 
-	uint32_t imgMemSize = IMAGE_MEMSIZE_IN_BYTE;
+	uint16_t overflow = imgMemSize / DMA_MAX_TRANFER_DATA;
+	uint16_t restImg = imgMemSize % DMA_MAX_TRANFER_DATA;
 
 	while (count < NUM_IMG) {
 		// transfer data from sram to host
 
-		if (imgMemSize < DMA_MAX_TRANFER_DATA) {
-			res = HAL_UART_Transmit_DMA(&huart5,
-					&imgBuff[count * IMG_SIZE_TEMP],
-					IMAGE_MEMSIZE_IN_BYTE);
+		uint32_t index = count * imgMemSize;
+
+		uint8_t transmitTime = overflow;
+		while (transmitTime > 0) {
+			res = HAL_UART_Transmit_DMA(&huart5, &imgBuff[index],
+			DMA_MAX_TRANFER_DATA);
 			while (!uartCmplt) {
 			}
-			count++;
 			uartCmplt = 0;
-		} else {
+			transmitTime--;
+			index += (int) DMA_MAX_TRANFER_DATA;
 
-			uint32_t index = count * IMG_SIZE_TEMP;
-
-			do {
-				res = HAL_UART_Transmit_DMA(&huart5,
-						&imgBuff[index],
-						DMA_MAX_TRANFER_DATA);
-				while (!uartCmplt) {
-				}
-				uartCmplt = 0;
-
-
-				//index += 45055;  // DMA_MAX_TRANFER_DATA = 0xAFFF = 45055
-				index += 65535;
-
-				imgMemSize -= DMA_MAX_TRANFER_DATA;
-
-				if (imgMemSize < DMA_MAX_TRANFER_DATA) {
-					res = HAL_UART_Transmit_DMA(&huart5,
-							&imgBuff[index], imgMemSize);
-					while (!uartCmplt) {
-					}
-					uartCmplt = 0;
-					count++;
-					break;
-				}
-
-			} while (imgMemSize != 0);
-			imgMemSize = IMAGE_MEMSIZE_IN_BYTE;
 		}
+
+		//index += 45055;  // DMA_MAX_TRANFER_DATA = 0xAFFF = 45055
+		res = HAL_UART_Transmit_DMA(&huart5, &imgBuff[index],
+					restImg);
+
+		while (!uartCmplt) {
+		}
+		uartCmplt = 0;
+		count++;
 	}
+
 }
 
 // TODO: test suspend
@@ -145,7 +134,7 @@ Camera_StatusTypeDef DCMI_Driver::CAMERA_Stop(void) {
 		ret = CAMERA_OK;
 	}
 
-	// TODO: make a camera on/off switch
+// TODO: make a camera on/off switch
 
 	camera_status = ret;
 #ifdef CAMERA_DEBUG_RTT
@@ -170,7 +159,7 @@ Camera_StatusTypeDef DCMI_Driver::CAMERA_Stop(void) {
  * 		     @arg CAMERA_R480x272
  * 		     @arg CAMERA_R640x480
  */
-uint32_t DCMI_Driver::GetSize(uint32_t resolution) {
+uint32_t DCMI_Driver::GetSizeInWord(uint32_t resolution) {
 	uint32_t size = 0;
 
 	/* Get capture size */
@@ -198,6 +187,49 @@ uint32_t DCMI_Driver::GetSize(uint32_t resolution) {
 
 	return size;
 }
+
+uint32_t DCMI_Driver::GetSizeInByte(uint32_t resolution, uint8_t color) {
+	uint32_t size = 0;
+	switch (color) {
+	case COLOR_IMG:
+		switch (resolution) {
+		case CAMERA_R160x120:
+			size = CAMERA_R160x120_COLOR_MEMSIZE;
+			break;
+		case CAMERA_R320x240:
+			size = CAMERA_R320x240_COLOR_MEMSIZE;
+			break;
+		case CAMERA_R480x272:
+			size = CAMERA_R480x272_COLOR_MEMSIZE;
+			break;
+		case CAMERA_R640x480:
+			size = CAMERA_R640x480_COLOR_MEMSIZE;
+			break;
+		}
+		break;
+	case MONOC_IMG:
+		switch (resolution) {
+		case CAMERA_R160x120:
+			size = CAMERA_R160x120_MONOC_MEMSIZE;
+			break;
+		case CAMERA_R320x240:
+			size = CAMERA_R320x240_MONOC_MEMSIZE;
+			break;
+		case CAMERA_R480x272:
+			size = CAMERA_R480x272_MONOC_MEMSIZE;
+			break;
+		case CAMERA_R640x480:
+			size = CAMERA_R640x480_MONOC_MEMSIZE;
+			break;
+		default:
+			size = CAMERA_R160x120_COLOR_MEMSIZE;
+			break;
+		}
+		break;
+	}
+	return size;
+}
+
 
 void DCMI_Driver::CAMERA_LineEventCallback(void) {
 	__HAL_DCMI_CLEAR_FLAG(&hdcmi, DCMI_IT_LINE);

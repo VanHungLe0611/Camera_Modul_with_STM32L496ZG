@@ -37,7 +37,6 @@ static uint32_t lineNum;
 #define CAMERA_LIGHTROOM_CALIBRATION_DELAY 891500 // in us
 
 #define IMAGE_RESOLUTION CAMERA_R320x240
-#define IMAGE_MEMSIZE_IN_BYTE  CAMERA_R320x240_COLOR_MEMSIZE
 #define IMAGE_BANDFILTER_ENABLE 1
 #define IMAGE_DEFAULT_FORMAT IMAGE_OUTPUT_FORMAT_YUV422
 #define CAMERA_DEFAULT_COLORMODE CAMERA_BLACK_WHITE_NORMAL
@@ -58,13 +57,10 @@ static uint32_t lineNum;
 #define CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE 0
 
 
-/*global flag */
 
 #define DMA_MAX_TRANFER_DATA 0xFFFF
-#define IMG_SIZE_TEMP 320*240*2
 #define NUM_IMG 2
 
-extern int uart_complete;
 extern uint32_t measured_time;
 
 #ifdef __cplusplus

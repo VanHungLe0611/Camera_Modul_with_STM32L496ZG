@@ -24,6 +24,9 @@ extern "C" {
 #define IMAGE_OUTPUT_FORMAT_RBG565 0x02
 #define IMAGE_OUTPUT_FORMAT_JPEG 0x03
 
+#define COLOR_IMG 0x01
+#define MONOC_IMG 0x00
+
 typedef enum {
   CAMERA_OK = 0x00,
   CAMERA_ERROR = 0x01,
@@ -47,7 +50,7 @@ public:
 
   /* Camera common operations */
   void CAMERA_ContinuousStart(uint8_t *buff);
-  void CAMERA_SnapshotStart(uint8_t *buff);
+  void CAMERA_SnapshotStart(uint8_t imgNUm);
   void CAMERA_Suspend(void);
   void CAMERA_Resume(void);
   Camera_StatusTypeDef CAMERA_Stop(void);
@@ -64,7 +67,8 @@ public:
   void  uart_transmit_complete(void);
   void  HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
 
-  uint32_t GetSize(uint32_t resolution);
+  uint32_t GetSizeInWord(uint32_t resolution);
+  uint32_t GetSizeInByte(uint32_t resolution, uint8_t color);
 
   /*
    *----------------- interface functions for sensor--------------------------

@@ -59,7 +59,6 @@ DMA_HandleTypeDef hdma_memtomem_dma1_channel1;
 SRAM_HandleTypeDef hsram1;
 
 /* USER CODE BEGIN PV */
-int uart_complete = 0;
 uint32_t measured_time = 0;
 
 /* USER CODE END PV */
@@ -382,7 +381,7 @@ static void MX_UART5_Init(void)
 
   /* USER CODE END UART5_Init 1 */
   huart5.Instance = UART5;
-  huart5.Init.BaudRate = 115200;
+  huart5.Init.BaudRate = 230400;
   huart5.Init.WordLength = UART_WORDLENGTH_8B;
   huart5.Init.StopBits = UART_STOPBITS_1;
   huart5.Init.Parity = UART_PARITY_NONE;
@@ -396,6 +395,7 @@ static void MX_UART5_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN UART5_Init 2 */
+  huart5.Init.BaudRate = 320000;
 
   /* USER CODE END UART5_Init 2 */
 

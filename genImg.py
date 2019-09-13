@@ -16,12 +16,12 @@ elif os.name == 'nt':
         print(str(i) + ":" + elem.device)
         sys.stdout.flush()
     idx = int(input())
-    ser = serial.Serial(comlist[idx].device, 115200)
+    ser = serial.Serial(comlist[idx].device, 230400)
 
 #####################################################
 # port config
 #####################################################
-ser.baudrate = 115200
+ser.baudrate = 230400
 ser.bytesize = 8
 ser.parity = 'N'
 print(

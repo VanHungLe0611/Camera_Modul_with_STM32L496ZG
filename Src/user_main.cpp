@@ -19,7 +19,7 @@ void user_code2() {
 
 	switch (cam_status) {
 	case CAMERA_OK:
-		cam_driver.CAMERA_SnapshotStart(CAMERA_BUFFER_INTERN);
+		cam_driver.CAMERA_SnapshotStart(NUM_IMG);
 
 		break;
 	case CAMERA_TIMEOUT:
