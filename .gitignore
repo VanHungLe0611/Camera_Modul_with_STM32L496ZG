@@ -2,6 +2,7 @@
 .project
 .cproject
 build/
+doc/
 Inc/user_main.h
 Src/user_main.c
 Drivers/CMSIS
