@@ -1,5 +1,4 @@
-#include "dcmi_driver.h"
-#include "stm32l4xx_hal.h"
+#include <DCMI_Driver.h>
 
 // TODO: do we need this?
 /**
@@ -122,16 +121,16 @@ void DCMI_Driver::CAMERA_Resume(void) {
  * @brief  Stop the CAMERA capture
  * @retval Camera status
  */
-Camera_StatusTypeDef DCMI_Driver::CAMERA_Stop(void) {
+HAL_StatusTypeDef DCMI_Driver::CAMERA_Stop(void) {
 	DCMI_HandleTypeDef *phdcmi;
 
-	Camera_StatusTypeDef ret = CAMERA_ERROR;
+	HAL_StatusTypeDef ret = HAL_ERROR;
 
 	/* Get the DCMI handle structure */
 	phdcmi = &hdcmi;
 
 	if (HAL_DCMI_Stop(phdcmi) == HAL_OK) {
-		ret = CAMERA_OK;
+		ret = HAL_OK;
 	}
 	return ret;
 }

@@ -50,8 +50,10 @@ extern "C" {
 #include "stm32l4xx_hal.h"
 #include "dwt_stm32_delay.h"
 #include "var_interface.h"
-#include "i2c_dcmi_driver.h"
-#include "ov2640_dcmi_drv.h"
+#include <I2C_IO.h>
+#include "OVxxxx.h"
+#include "dwt_stm32_delay.h"
+
 
 /** @addtogroup BSP
  * @{
@@ -471,42 +473,43 @@ extern "C" {
 
 extern CAMERA_DrvTypeDef ov2640_drv;
 
-class ov2640: public ov2640_dcmi_drv {
+class OV2640: public OVxxxx {
 
 	/** @defgroup OV2640_Exported_Functions
 	 * @{
 	 */
 private:
-	ov2640() {
-		camera_i2c_addr = OV2640_I2C_ADDRESS;
-		current_resolution = 0x00;
+	OV2640() {
+		oVAddr = OV2640_I2C_ADDRESS;
+		resolution = 0x00;
 		sensorRegBank = OV2640_RDSP_RA_DLMT_SEL_SENSOR;
 		digitalRegBank = OV2640_RDSP_RA_DLMT_SEL_DSP;
 		regBankSelectCommand  = OV2640_DSP_RA_DLMT;
 	}
-	ov2640(const ov2640&);
-	ov2640& operator=(const ov2640&);
+	OV2640(const OV2640&);
+	OV2640& operator=(const OV2640&);
 public:
 
-	static ov2640& instance() {
-		static ov2640 _instance;
+	static OV2640& instance() {
+		static OV2640 _instance;
 		return _instance;
 	}
-	~ov2640() {
+	~OV2640() {
 	}
 
-	void Init(uint16_t DeviceAddr, uint32_t resolution);
-	void Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
+	void configResolution(uint16_t DeviceAddr, uint32_t resolution);
+	void configFeature(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
 			uint32_t BR_value);
-	uint16_t ReadID(uint16_t DeviceAddr);
-	Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution);
+	uint16_t readID(uint16_t DeviceAddr);
+	Camera_StatusTypeDef init(uint32_t Resolution);
 	/* Sensor control */
-	void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
+	void contrastBrightnessConfig(uint32_t contrast_level,
 			uint32_t brightness_level);
-	void CAMERA_BlackWhiteConfig(uint32_t Mode);
-	void CAMERA_ColorEffectConfig(uint32_t Effect);
-	void CAMERA_factoryReset(void);
-	void CAMERA_setOutputFormat(uint8_t format);
+	void blackWhiteConfig(uint32_t Mode);
+	void colorEffectConfig(uint32_t Effect);
+
+	void factoryReset(void);
+	void setOutputFormat(uint8_t format);
 
 };
 /* CAMERA driver structure */

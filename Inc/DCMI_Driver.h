@@ -23,11 +23,6 @@ extern "C" {
 #define COLOR_IMG 0x01
 #define MONOC_IMG 0x00
 
-typedef enum {
-  CAMERA_OK = 0x00,
-  CAMERA_ERROR = 0x01,
-  CAMERA_TIMEOUT = 0x02
-} Camera_StatusTypeDef;
 
 /* START DCMI_Driver class*/
 class DCMI_Driver {
@@ -45,7 +40,7 @@ public:
   void CAMERA_SnapshotStart(uint8_t imgNum, uint16_t current_resolution);
   void CAMERA_Suspend(void);
   void CAMERA_Resume(void);
-  Camera_StatusTypeDef CAMERA_Stop(void);
+  HAL_StatusTypeDef CAMERA_Stop(void);
 
   /* Camera interrupts handler and callbacks functions */
   static void CAMERA_LineEventCallback(void);

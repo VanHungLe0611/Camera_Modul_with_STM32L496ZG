@@ -41,6 +41,8 @@ static uint32_t lineNum;
 #define IMAGE_DEFAULT_FORMAT IMAGE_OUTPUT_FORMAT_YUV422
 #define CAMERA_DEFAULT_COLORMODE CAMERA_BLACK_WHITE_NORMAL
 
+
+// TODO: remove these adresss after Found way to reserved Memory in SRAM
 #define CAMERA_BUFFER_EXTERN (uint8_t *)0x68000800 // data address for external sram
 #define CAMERA_BUFFER_INTERN (uint8_t*) 0x20008000  // data address for internal sram
 

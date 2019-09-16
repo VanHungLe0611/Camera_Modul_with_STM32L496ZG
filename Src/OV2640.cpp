@@ -9,8 +9,7 @@
  **/
 
 /* Includes ------------------------------------------------------------------*/
-#include "ov2640.h"
-#include "dwt_stm32_delay.h"
+#include "OV2640.h"
 
 /** @addtogroup BSP
  * @{
@@ -64,8 +63,9 @@ static uint32_t ov2640_ConvertValue(uint32_t feature, uint32_t value);
 
 
 /* Initialization sequence for 480x272 resolution */
-const unsigned char OV2640_480x272[][2] = { { OV2640_DSP_RA_DLMT,
+const unsigned char OV2640_480x272[][2] = {  { OV2640_DSP_RA_DLMT,
 OV2640_RDSP_RA_DLMT_SEL_DSP }, /* Device control register list Table 12 */
+
 { 0x2c, 0xff }, /* Reserved                              */
 { 0x2e, 0xdf }, /* Reserved                              */
 { OV2640_DSP_RA_DLMT,
@@ -173,7 +173,7 @@ OV2640_RDSP_RA_DLMT_SEL_SENSOR }, /* Device control register list Table 13
 				0x00 }, };
 
 /* Initialization sequence for VGA resolution (640x480)*/
-const unsigned char OV2640_VGA[][2] = {  { 0xff, 0x00 }, /* Device control register list Table 12 */
+const unsigned char OV2640_VGA[][2] = { { 0xff, 0x00 }, /* Device control register list Table 12 */
 
 { 0x2c, 0xff }, /* Reserved                              */
 { 0x2e, 0xdf }, /* Reserved                              */
@@ -384,8 +384,6 @@ const char OV2640_QQVGA[][2] = { { 0xff, 0x00 }, { 0x2c, 0xff }, { 0x2e, 0xdf },
 				0x08 }, { 0xda, 0x09 }, { 0x98, 0x00 }, { 0x99, 0x00 }, { 0x00,
 				0x00 }, };
 
-
-
 /**
  * @brief  Configures the OV2640 camera feature.
  * @param  DeviceAddr: Device address on communication Bus.
@@ -394,7 +392,7 @@ const char OV2640_QQVGA[][2] = { { 0xff, 0x00 }, { 0x2c, 0xff }, { 0x2e, 0xdf },
  * @param  brightness_value: Brightness value to be configured
  * @retval None
  */
-void ov2640::Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
+void OV2640::configFeature(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
 		uint32_t brightness_value) {
 	uint8_t value1, value2;
 	uint32_t value_tmp;
@@ -407,36 +405,36 @@ void ov2640::Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
 
 	switch (feature) {
 	case CAMERA_BLACK_WHITE: {
-		I2Cx_Write(DeviceAddr, 0xff, 0x00);
-		I2Cx_Write(DeviceAddr, 0x7c, 0x00);
-		I2Cx_Write(DeviceAddr, 0x7d, value_tmp);
-		I2Cx_Write(DeviceAddr, 0x7c, 0x05);
-		I2Cx_Write(DeviceAddr, 0x7d, 0x80);
-		I2Cx_Write(DeviceAddr, 0x7d, 0x80);
+		i2c.write(DeviceAddr, 0xff, 0x00);
+		i2c.write(DeviceAddr, 0x7c, 0x00);
+		i2c.write(DeviceAddr, 0x7d, value_tmp);
+		i2c.write(DeviceAddr, 0x7c, 0x05);
+		i2c.write(DeviceAddr, 0x7d, 0x80);
+		i2c.write(DeviceAddr, 0x7d, 0x80);
 		break;
 	}
 	case CAMERA_CONTRAST_BRIGHTNESS: {
 		value1 = (uint8_t) (value_tmp);
 		value2 = (uint8_t) (value_tmp >> 8);
-		I2Cx_Write(DeviceAddr, 0xff, 0x00);
-		I2Cx_Write(DeviceAddr, 0x7c, 0x00);
-		I2Cx_Write(DeviceAddr, 0x7d, 0x04);
-		I2Cx_Write(DeviceAddr, 0x7c, 0x07);
-		I2Cx_Write(DeviceAddr, 0x7d, br_value);
-		I2Cx_Write(DeviceAddr, 0x7d, value1);
-		I2Cx_Write(DeviceAddr, 0x7d, value2);
-		I2Cx_Write(DeviceAddr, 0x7d, 0x06);
+		i2c.write(DeviceAddr, 0xff, 0x00);
+		i2c.write(DeviceAddr, 0x7c, 0x00);
+		i2c.write(DeviceAddr, 0x7d, 0x04);
+		i2c.write(DeviceAddr, 0x7c, 0x07);
+		i2c.write(DeviceAddr, 0x7d, br_value);
+		i2c.write(DeviceAddr, 0x7d, value1);
+		i2c.write(DeviceAddr, 0x7d, value2);
+		i2c.write(DeviceAddr, 0x7d, 0x06);
 		break;
 	}
 	case CAMERA_COLOR_EFFECT: {
 		value1 = (uint8_t) (value_tmp);
 		value2 = (uint8_t) (value_tmp >> 8);
-		I2Cx_Write(DeviceAddr, 0xff, 0x00);
-		I2Cx_Write(DeviceAddr, 0x7c, 0x00);
-		I2Cx_Write(DeviceAddr, 0x7d, 0x18);
-		I2Cx_Write(DeviceAddr, 0x7c, 0x05);
-		I2Cx_Write(DeviceAddr, 0x7d, value1);
-		I2Cx_Write(DeviceAddr, 0x7d, value2);
+		i2c.write(DeviceAddr, 0xff, 0x00);
+		i2c.write(DeviceAddr, 0x7c, 0x00);
+		i2c.write(DeviceAddr, 0x7d, 0x18);
+		i2c.write(DeviceAddr, 0x7c, 0x05);
+		i2c.write(DeviceAddr, 0x7d, value1);
+		i2c.write(DeviceAddr, 0x7d, value2);
 		break;
 	}
 	default: {
@@ -445,8 +443,239 @@ void ov2640::Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
 	}
 }
 
+/**
+ * @brief factory reset all camera register
+ */
+void OV2640::factoryReset(void) {
+	i2c.write(oVAddr, OV2640_DSP_RA_DLMT,
+	OV2640_RDSP_RA_DLMT_SEL_DSP);
+	DWT_Delay_us(CAMERA_DELAY_INTERVAL);
+	writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_SENSOR,
+	OV2640_SENSOR_COM7, 0x80); // reset all registers
+	DWT_Delay_us(CAMERA_DELAY_INTERVAL);
+}
 
+void OV2640::setOutputFormat(uint8_t format) {
+	switch (format) {
+	case IMAGE_OUTPUT_FORMAT_JPEG:
+		// TODO: JPEG
+		break;
+	case IMAGE_OUTPUT_FORMAT_RAW10:
+		writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP,
+		OV2640_DSP_IMAGE_MODE, 0x04); // enable RAW10-format
+		break;
+	case IMAGE_OUTPUT_FORMAT_RBG565:
+		writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP,
+		OV2640_DSP_IMAGE_MODE, 0x08); // enable RGB565-format
+		break;
+	case IMAGE_OUTPUT_FORMAT_YUV422:
+		writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP,
+		OV2640_DSP_IMAGE_MODE, 0x01); // enable YCBCR-format
+		break;
+	default:
+		break;
+	}
+}
 
+/**
+ * @brief  Initializes the camera with defauft configurations.
+ * @param  Resolution: Camera Resolution
+ * @retval Camera status
+ */
+Camera_StatusTypeDef OV2640::init(uint32_t Resolution) {
+	Camera_StatusTypeDef ret = CAMERA_ERROR;
+
+	/* start measuring time */
+	measured_time = HAL_GetTick();
+
+	/* DCMI Initialization */
+	// HAL_DCMI_Init(&hdcmi); //TODO: do we need this?
+	if (readID(oVAddr) == OV2640_ID) {
+		/* Initialize the camera driver structure */
+
+		/* Camera Init */
+		configResolution(oVAddr, Resolution);
+		/* specific default settings */
+		if (IMAGE_BANDFILTER_ENABLE) {
+			writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, 0x13,
+					0xc5); // activate band filter
+		} else {
+			writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, 0x13,
+					0xe5); // deactivate band
+		}
+		setOutputFormat(CAMERA_BLACK_WHITE_BW);
+		blackWhiteConfig(CAMERA_DEFAULT_COLORMODE);
+		contrastBrightnessConfig(CAMERA_CONTRAST_LEVEL3,
+				CAMERA_BRIGHTNESS_LEVEL3);
+		/* Return CAMERA_OK status */
+		ret = CAMERA_OK;
+	} else {
+#ifdef CAMERA_DEBUG_RTT
+		SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
+				"Error: Can't read sensor ID (check sensor ID or I2c "
+						"connection again)\n");
+#endif
+	}
+
+#ifdef CAMERA_DEBUG_RTT
+	if (ret == CAMERA_ERROR) {
+		SEGGER_RTT_printf(
+		CAMERA_COMMON_DEBUG_RTT_DISABLE,
+				"-----------Error: CAMERA cannot initialized correctly----------\n");
+	} else {
+		SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
+				"----------------CAMERA INIT OK-------------\n");
+	}
+	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "Done\n");
+
+	/* end measuring time */
+	SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE,
+			"************** Register Init TIME %d ************\n",
+			HAL_GetTick() - measured_time);
+	int tempTime = HAL_GetTick();
+
+#endif
+
+	DWT_Delay_us(CAMERA_INIT_DELAY_MULTIPLICATOR * CAMERA_DELAY_INTERVAL); //delay until camera sensor is ready
+
+#ifdef CAMERA_DEBUG_RTT
+	SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE,
+			"************** Cam Delay TIME %d ************\n",
+			HAL_GetTick() - tempTime);
+#endif
+	return ret;
+}
+
+/**
+ * @brief  Configures the camera contrast and brightness.
+ * @param  contrast_level: Contrast level
+ *          This parameter can be one of the following values:
+ *            @arg  CAMERA_CONTRAST_LEVEL4: for contrast +2
+ *            @arg  CAMERA_CONTRAST_LEVEL3: for contrast +1
+ *            @arg  CAMERA_CONTRAST_LEVEL2: for contrast  0
+ *            @arg  CAMERA_CONTRAST_LEVEL1: for contrast -1
+ *            @arg  CAMERA_CONTRAST_LEVEL0: for contrast -2
+ * @param  brightness_level: Contrast level
+ *          This parameter can be one of the following values:
+ *            @arg  CAMERA_BRIGHTNESS_LEVEL4: for brightness +2
+ *            @arg  CAMERA_BRIGHTNESS_LEVEL3: for brightness +1
+ *            @arg  CAMERA_BRIGHTNESS_LEVEL2: for brightness  0
+ *            @arg  CAMERA_BRIGHTNESS_LEVEL1: for brightness -1
+ *            @arg  CAMERA_BRIGHTNESS_LEVEL0: for brightness -2
+ */
+void OV2640::contrastBrightnessConfig(uint32_t contrast_level,
+		uint32_t brightness_level) {
+	configFeature(oVAddr, CAMERA_CONTRAST_BRIGHTNESS, contrast_level,
+			brightness_level);
+
+}
+
+/**
+ * @brief  Configures the camera white balance.
+ * @param  Mode: black_white mode
+ *          This parameter can be one of the following values:
+ *            @arg  CAMERA_BLACK_WHITE_BW
+ *            @arg  CAMERA_BLACK_WHITE_NEGATIVE
+ *            @arg  CAMERA_BLACK_WHITE_BW_NEGATIVE
+ *            @arg  CAMERA_BLACK_WHITE_NORMAL
+ */
+void OV2640::blackWhiteConfig(uint32_t Mode) {
+	configFeature(oVAddr, CAMERA_BLACK_WHITE, Mode, 0);
+
+}
+
+/**
+ * @brief  Configures the camera color effect.
+ * @param  Effect: Color effect
+ *          This parameter can be one of the following values:
+ *            @arg  CAMERA_COLOR_EFFECT_ANTIQUE
+ *            @arg  CAMERA_COLOR_EFFECT_BLUE
+ *            @arg  CAMERA_COLOR_EFFECT_GREEN
+ *            @arg  CAMERA_COLOR_EFFECT_RED
+ */
+void OV2640::colorEffectConfig(uint32_t Effect) {
+	configFeature(oVAddr, CAMERA_COLOR_EFFECT, Effect, 0);
+}
+
+/**
+ * @brief  Read the OV2640 Camera identity.
+ * @param  DeviceAddr: Device address on communication Bus.
+ * @retval the OV2640 ID
+ */
+uint16_t OV2640::readID(uint16_t DeviceAddr) {
+	/* Initialize I2C */
+	i2c.init(&hi2c1);
+
+	/* Prepare the sensor to read the Camera ID */
+	i2c.write(DeviceAddr, OV2640_DSP_RA_DLMT, 0x01);
+
+	/* Get the camera ID */
+	return (i2c.read(DeviceAddr, OV2640_SENSOR_PIDH));
+}
+
+/**
+ * @}
+ */
+
+/** @defgroup OV2640_Private_Functions
+ * @{
+ */
+
+/**
+ * @brief  Config resolution of OV2640 CAMERA.
+ * @param  DeviceAddr: Device address on communication Bus.
+ * @param  resolution: Camera resolution
+ * @retval None
+ */
+void OV2640::configResolution(uint16_t DeviceAddr, uint32_t resolution) {
+	uint32_t index;
+
+	/* Initialize I2C */
+	i2c.init(&hi2c1);
+
+	/* Prepare the camera to be configured */
+	i2c.write(DeviceAddr, OV2640_DSP_RA_DLMT, 0x01);
+	i2c.write(DeviceAddr, OV2640_SENSOR_COM7, 0x80);
+	DWT_Delay_us(CAMERA_DELAY_INTERVAL);
+	/* Initialize OV2640 */
+	switch (resolution) {
+	case CAMERA_R160x120: {
+		for (index = 0; index < (sizeof(OV2640_QQVGA) / 2); index++) {
+			i2c.write(DeviceAddr, OV2640_QQVGA[index][0],
+					OV2640_QQVGA[index][1]);
+			DWT_Delay_us(CAMERA_DELAY_INTERVAL);
+		}
+		break;
+	}
+	case CAMERA_R320x240: {
+		for (index = 0; index < (sizeof(OV2640_QVGA) / 2); index++) {
+			i2c.write(DeviceAddr, OV2640_QVGA[index][0],
+					OV2640_QVGA[index][1]);
+			DWT_Delay_us(CAMERA_DELAY_INTERVAL);
+		}
+		break;
+	}
+	case CAMERA_R480x272: {
+		for (index = 0; index < (sizeof(OV2640_480x272) / 2); index++) {
+			i2c.write(DeviceAddr, OV2640_480x272[index][0],
+					OV2640_480x272[index][1]);
+			DWT_Delay_us(CAMERA_DELAY_INTERVAL * 2);
+		}
+		break;
+	}
+	case CAMERA_R640x480: {
+		for (index = 0; index < (sizeof(OV2640_VGA) / 2); index++) {
+			i2c.write(DeviceAddr, OV2640_VGA[index][0],
+					OV2640_VGA[index][1]);
+			DWT_Delay_us(CAMERA_DELAY_INTERVAL * 2);
+		}
+		break;
+	}
+	default: {
+		break;
+	}
+	}
+}
 
 /******************************************************************************
  Static Functions
@@ -569,245 +798,6 @@ static uint32_t ov2640_ConvertValue(uint32_t feature, uint32_t value) {
 
 	return ret;
 }
-
-/**
- * @brief factory reset all camera register
- */
-void ov2640::CAMERA_factoryReset(void) {
-	I2Cx_Write(camera_i2c_addr, OV2640_DSP_RA_DLMT,
-	OV2640_RDSP_RA_DLMT_SEL_DSP);
-	DWT_Delay_us(CAMERA_DELAY_INTERVAL);
-	CAMERA_writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_SENSOR,
-			OV2640_SENSOR_COM7, 0x80); // reset all registers
-	DWT_Delay_us(CAMERA_DELAY_INTERVAL);
-}
-
-void ov2640::CAMERA_setOutputFormat(uint8_t format) {
-	switch (format) {
-	case IMAGE_OUTPUT_FORMAT_JPEG:
-		// TODO: JPEG
-		break;
-	case IMAGE_OUTPUT_FORMAT_RAW10:
-		CAMERA_writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP,
-				OV2640_DSP_IMAGE_MODE, 0x04); // enable RAW10-format
-		break;
-	case IMAGE_OUTPUT_FORMAT_RBG565:
-		CAMERA_writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP,
-				OV2640_DSP_IMAGE_MODE, 0x08); // enable RGB565-format
-		break;
-	case IMAGE_OUTPUT_FORMAT_YUV422:
-		CAMERA_writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP,
-				OV2640_DSP_IMAGE_MODE, 0x01); // enable YCBCR-format
-		break;
-	default:
-		break;
-	}
-}
-
-/**
- * @brief  Initializes the camera with defauft configurations.
- * @param  Resolution: Camera Resolution
- * @retval Camera status
- */
-Camera_StatusTypeDef ov2640::CAMERA_Init(uint32_t Resolution) {
-	Camera_StatusTypeDef ret = CAMERA_ERROR;
-
-	/* start measuring time */
-	measured_time = HAL_GetTick();
-
-	/* DCMI Initialization */
-	// HAL_DCMI_Init(&hdcmi); //TODO: do we need this?
-	if ( ReadID(OV2640_I2C_ADDRESS) == OV2640_ID) {
-		/* Initialize the camera driver structure */
-
-		/* Camera Init */
-		Init(camera_i2c_addr, Resolution);
-		/* specific default settings */
-		if (IMAGE_BANDFILTER_ENABLE) {
-			CAMERA_writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, 0x13,
-					0xc5); // activate band filter
-		} else {
-			CAMERA_writeMultipleRegValue(OV2640_RDSP_RA_DLMT_SEL_DSP, 0x13,
-					0xe5); // deactivate band
-		}
-		CAMERA_setOutputFormat(IMAGE_DEFAULT_FORMAT);
-		CAMERA_BlackWhiteConfig(CAMERA_DEFAULT_COLORMODE);
-
-		/* Return CAMERA_OK status */
-		ret = CAMERA_OK;
-	} else {
-#ifdef CAMERA_DEBUG_RTT
-		SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-				"Error: Can't read sensor ID (check sensor ID or I2c "
-						"connection again)\n");
-#endif
-	}
-
-#ifdef CAMERA_DEBUG_RTT
-	if (ret == CAMERA_ERROR) {
-		SEGGER_RTT_printf(
-		CAMERA_COMMON_DEBUG_RTT_DISABLE,
-				"-----------Error: CAMERA cannot initialized correctly----------\n");
-	} else {
-		SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-				"----------------CAMERA INIT OK-------------\n");
-	}
-	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "Done\n");
-
-	/* end measuring time */
-	SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE,
-			"************** Register Init TIME %d ************\n",
-			HAL_GetTick() - measured_time);
-	int tempTime = HAL_GetTick();
-
-#endif
-
-	DWT_Delay_us(CAMERA_INIT_DELAY_MULTIPLICATOR * CAMERA_DELAY_INTERVAL); //delay until camera sensor is ready
-
-#ifdef CAMERA_DEBUG_RTT
-	SEGGER_RTT_printf(CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE,
-			"************** Cam Delay TIME %d ************\n",
-			HAL_GetTick() - tempTime);
-#endif
-	return ret;
-}
-
-/**
- * @brief  Configures the camera contrast and brightness.
- * @param  contrast_level: Contrast level
- *          This parameter can be one of the following values:
- *            @arg  CAMERA_CONTRAST_LEVEL4: for contrast +2
- *            @arg  CAMERA_CONTRAST_LEVEL3: for contrast +1
- *            @arg  CAMERA_CONTRAST_LEVEL2: for contrast  0
- *            @arg  CAMERA_CONTRAST_LEVEL1: for contrast -1
- *            @arg  CAMERA_CONTRAST_LEVEL0: for contrast -2
- * @param  brightness_level: Contrast level
- *          This parameter can be one of the following values:
- *            @arg  CAMERA_BRIGHTNESS_LEVEL4: for brightness +2
- *            @arg  CAMERA_BRIGHTNESS_LEVEL3: for brightness +1
- *            @arg  CAMERA_BRIGHTNESS_LEVEL2: for brightness  0
- *            @arg  CAMERA_BRIGHTNESS_LEVEL1: for brightness -1
- *            @arg  CAMERA_BRIGHTNESS_LEVEL0: for brightness -2
- */
-void ov2640::CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
-		uint32_t brightness_level) {
-	Config(camera_i2c_addr, CAMERA_CONTRAST_BRIGHTNESS, contrast_level,
-			brightness_level);
-
-
-}
-
-/**
- * @brief  Configures the camera white balance.
- * @param  Mode: black_white mode
- *          This parameter can be one of the following values:
- *            @arg  CAMERA_BLACK_WHITE_BW
- *            @arg  CAMERA_BLACK_WHITE_NEGATIVE
- *            @arg  CAMERA_BLACK_WHITE_BW_NEGATIVE
- *            @arg  CAMERA_BLACK_WHITE_NORMAL
- */
-void ov2640::CAMERA_BlackWhiteConfig(uint32_t Mode) {
-	Config(camera_i2c_addr, CAMERA_BLACK_WHITE, Mode, 0);
-
-}
-
-/**
- * @brief  Configures the camera color effect.
- * @param  Effect: Color effect
- *          This parameter can be one of the following values:
- *            @arg  CAMERA_COLOR_EFFECT_ANTIQUE
- *            @arg  CAMERA_COLOR_EFFECT_BLUE
- *            @arg  CAMERA_COLOR_EFFECT_GREEN
- *            @arg  CAMERA_COLOR_EFFECT_RED
- */
-void ov2640::CAMERA_ColorEffectConfig(uint32_t Effect) {
-	Config(camera_i2c_addr, CAMERA_COLOR_EFFECT, Effect, 0);
-}
-
-
-
-/**
- * @brief  Read the OV2640 Camera identity.
- * @param  DeviceAddr: Device address on communication Bus.
- * @retval the OV2640 ID
- */
-uint16_t ov2640::ReadID(uint16_t DeviceAddr) {
-	/* Initialize I2C */
-	I2Cx_Init();
-
-	/* Prepare the sensor to read the Camera ID */
-	I2Cx_Write(DeviceAddr, OV2640_DSP_RA_DLMT, 0x01);
-
-	/* Get the camera ID */
-	return (I2Cx_Read(DeviceAddr, OV2640_SENSOR_PIDH));
-}
-
-/**
- * @}
- */
-
-/** @defgroup OV2640_Private_Functions
- * @{
- */
-
-/**
- * @brief  Initializes the OV2640 CAMERA component.
- * @param  DeviceAddr: Device address on communication Bus.
- * @param  resolution: Camera resolution
- * @retval None
- */
-void ov2640::Init(uint16_t DeviceAddr, uint32_t resolution) {
-	uint32_t index;
-
-	/* Initialize I2C */
-	I2Cx_Init();
-
-	/* Prepare the camera to be configured */
-	I2Cx_Write(DeviceAddr, OV2640_DSP_RA_DLMT, 0x01);
-	I2Cx_Write(DeviceAddr, OV2640_SENSOR_COM7, 0x80);
-	DWT_Delay_us(CAMERA_DELAY_INTERVAL);
-	/* Initialize OV2640 */
-	switch (resolution) {
-	case CAMERA_R160x120: {
-		for (index = 0; index < (sizeof(OV2640_QQVGA) / 2); index++) {
-			I2Cx_Write(DeviceAddr, OV2640_QQVGA[index][0],
-					OV2640_QQVGA[index][1]);
-			DWT_Delay_us(CAMERA_DELAY_INTERVAL);
-		}
-		break;
-	}
-	case CAMERA_R320x240: {
-		for (index = 0; index < (sizeof(OV2640_QVGA) / 2); index++) {
-			I2Cx_Write(DeviceAddr, OV2640_QVGA[index][0],
-					OV2640_QVGA[index][1]);
-			DWT_Delay_us(CAMERA_DELAY_INTERVAL);
-		}
-		break;
-	}
-	case CAMERA_R480x272: {
-		for (index = 0; index < (sizeof(OV2640_480x272) / 2); index++) {
-			I2Cx_Write(DeviceAddr, OV2640_480x272[index][0],
-					OV2640_480x272[index][1]);
-			DWT_Delay_us(CAMERA_DELAY_INTERVAL * 2);
-		}
-		break;
-	}
-	case CAMERA_R640x480: {
-		for (index = 0; index < (sizeof(OV2640_VGA) / 2); index++) {
-			I2Cx_Write(DeviceAddr, OV2640_VGA[index][0], OV2640_VGA[index][1]);
-			DWT_Delay_us(CAMERA_DELAY_INTERVAL * 2);
-		}
-		break;
-	}
-	default: {
-		break;
-	}
-	}
-}
-
-
-
-
 
 /**
  * @}

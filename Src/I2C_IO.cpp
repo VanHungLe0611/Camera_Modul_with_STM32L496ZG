@@ -1,13 +1,12 @@
-#include "i2c_dcmi_driver.h"
+#include "I2C_IO.h"
 
-static I2C_HandleTypeDef *hi2c_dcmi;
 // TODO: read/write should do multiple try if I2c error happens
 /******************************* I2C Routines *********************************/
 /**
  * @brief  Initializes I2C HAL.
  */
-void I2Cx_Init() {
-	hi2c_dcmi = &hi2c1;
+void I2C_IO::init(I2C_HandleTypeDef *hi2c) {
+	pI2C = hi2c;
 }
 
 /**
@@ -16,7 +15,7 @@ void I2Cx_Init() {
  * @param  Reg: Register address
  * @param  Value: Data to be written
  */
-HAL_StatusTypeDef I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
+HAL_StatusTypeDef I2C_IO::write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
 	HAL_StatusTypeDef status = HAL_OK;
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE,
@@ -24,13 +23,13 @@ HAL_StatusTypeDef I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
 			Addr, Value);
 #endif
 
-	status = HAL_I2C_Mem_Write(hi2c_dcmi, Addr, (uint16_t) Reg,
+	status = HAL_I2C_Mem_Write(pI2C, Addr, (uint16_t) Reg,
 	I2C_MEMADD_SIZE_8BIT, &Value, 1, 100);
 
 	/* Check the communication status */
 	if (status != HAL_OK) {
 		/* Execute user timeout callback */
-		I2Cx_Error(Addr);
+		errorHandle(Addr);
 	}
 	return status;
 }
@@ -41,11 +40,11 @@ HAL_StatusTypeDef I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value) {
  * @param  Reg: Register address
  * @retval Read data
  */
-uint8_t I2Cx_Read(uint8_t Addr, uint8_t Reg) {
+uint8_t I2C_IO::read(uint8_t Addr, uint8_t Reg) {
 	HAL_StatusTypeDef status = HAL_OK;
 	uint8_t Value = 0;
 
-	status = HAL_I2C_Mem_Read(hi2c_dcmi, Addr, Reg, I2C_MEMADD_SIZE_8BIT,
+	status = HAL_I2C_Mem_Read(pI2C, Addr, Reg, I2C_MEMADD_SIZE_8BIT,
 			&Value, 1, 1000);
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_I2C_DEBUG_RTT_DISABLE,
@@ -54,7 +53,7 @@ uint8_t I2Cx_Read(uint8_t Addr, uint8_t Reg) {
 	/* Check the communication status */
 	if (status != HAL_OK) {
 		/* Execute user timeout callback */
-		I2Cx_Error(Addr);
+		errorHandle(Addr);
 	}
 	return Value;
 }
@@ -68,7 +67,7 @@ uint8_t I2Cx_Read(uint8_t Addr, uint8_t Reg) {
  * @param  Length: Length of the data
  * @retval Number of read data
  */
-HAL_StatusTypeDef I2Cx_ReadMultiple(uint8_t Addr, uint16_t Reg,
+HAL_StatusTypeDef I2C_IO::readMultiple(uint8_t Addr, uint16_t Reg,
 		uint16_t MemAddress, uint8_t *Buffer, uint16_t Length) {
 	HAL_StatusTypeDef status = HAL_OK;
 
@@ -77,13 +76,13 @@ HAL_StatusTypeDef I2Cx_ReadMultiple(uint8_t Addr, uint16_t Reg,
 			"I2c read multiple: read register 0x%x of device 0x%x - "
 					"sum address: 0x%x\n", Reg, Addr, MemAddress);
 #endif
-	status = HAL_I2C_Mem_Read(hi2c_dcmi, Addr, (uint16_t) Reg, MemAddress,
+	status = HAL_I2C_Mem_Read(pI2C, Addr, (uint16_t) Reg, MemAddress,
 			Buffer, Length, 1000);
 
 	/* Check the communication status */
 	if (status != HAL_OK) {
 		/* I2C error occured */
-		I2Cx_Error(Addr);
+		errorHandle(Addr);
 	}
 	return status;
 }
@@ -98,7 +97,7 @@ HAL_StatusTypeDef I2Cx_ReadMultiple(uint8_t Addr, uint16_t Reg,
  * @param  Length: buffer size to be written
  * @retval HAL status
  */
-HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg,
+HAL_StatusTypeDef I2C_IO::writeMultiple(uint8_t Addr, uint16_t Reg,
 		uint16_t MemAddress, uint8_t *Buffer, uint16_t Length) {
 	HAL_StatusTypeDef status = HAL_OK;
 #ifdef CAMERA_DEBUG_RTT
@@ -107,13 +106,13 @@ HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg,
 					"sum address: 0x%x\n", Reg, Addr, MemAddress);
 #endif
 
-	status = HAL_I2C_Mem_Write(hi2c_dcmi, Addr, (uint16_t) Reg, MemAddress,
+	status = HAL_I2C_Mem_Write(pI2C, Addr, (uint16_t) Reg, MemAddress,
 			Buffer, Length, 1000);
 
 	/* Check the communication status */
 	if (status != HAL_OK) {
 		/* Re-Initialize the I2C Bus */
-		I2Cx_Error(Addr);
+		errorHandle(Addr);
 	}
 	return status;
 }
@@ -122,7 +121,7 @@ HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg,
  * @brief  Manages error callback by re-initializing I2C.
  * @param  Addr: I2C Address
  */
-void I2Cx_Error(uint8_t Addr) {
+void I2C_IO::errorHandle(uint8_t Addr) {
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
 			"Error: I2C HAL Problem \n");
@@ -133,10 +132,10 @@ void I2Cx_Error(uint8_t Addr) {
 			"Reinitializing I2c... ");
 #endif
 	/* De-initialize the I2C communication bus */
-	HAL_I2C_DeInit(hi2c_dcmi);
+	HAL_I2C_DeInit(pI2C);
 
 	/* Re-Initialize the I2C communication bus */
-	I2Cx_Init();
+	init(pI2C);
 #ifdef CAMERA_DEBUG_RTT
 	SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE, "Done\n");
 #endif

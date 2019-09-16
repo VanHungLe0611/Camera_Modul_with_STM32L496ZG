@@ -7,23 +7,34 @@ extern "C" {
 
 #include "stm32l4xx_hal.h"
 #include "var_interface.h"
+#include "SEGGER_RTT.h"
 
 /**
  * @brief  Define for STM324x9I_EVAL board
  */
-#if !defined(USE_STM324x9I_EVAL)
-#define USE_STM324x9I_EVAL
-#endif
 
-void I2Cx_Init();
-HAL_StatusTypeDef I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
-uint8_t I2Cx_Read(uint8_t Addr, uint8_t Reg);
-HAL_StatusTypeDef I2Cx_ReadMultiple(uint8_t Addr, uint16_t Reg,
-		uint16_t MemAddSize, uint8_t *Buffer, uint16_t Length);
-HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg,
-		uint16_t MemAddSize, uint8_t *Buffer, uint16_t Length);
-void I2Cx_Error(uint8_t Addr);
+class I2C_IO{
+protected :
+	I2C_HandleTypeDef * pI2C;
+public:
+	I2C_IO(){
+		pI2C =  NULL;
+	}
 
+
+void init(I2C_HandleTypeDef * pi2c);
+HAL_StatusTypeDef write(uint8_t Addr, uint8_t Reg, uint8_t Value);
+uint8_t read(uint8_t Addr, uint8_t Reg);
+HAL_StatusTypeDef readMultiple(uint8_t Addr, uint16_t Reg,
+		uint16_t MemAddSize, uint8_t *Buffer, uint16_t Length);
+HAL_StatusTypeDef writeMultiple(uint8_t Addr, uint16_t Reg,
+		uint16_t MemAddSize, uint8_t *Buffer, uint16_t Length);
+void errorHandle(uint8_t Addr);
+
+~I2C_IO(){
+
+	}
+};
 #ifdef __cplusplus
 }
 #endif
