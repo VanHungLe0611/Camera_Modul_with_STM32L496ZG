@@ -9,13 +9,13 @@ void user_code1() {
 void user_code2() {
 
 	// get instance of camera
-	ov2640_dcmi_drv &cam_driver = ov2640_dcmi_drv::instance();
+	ov2640 &cam_driver = ov2640::instance();
 	// init camera
 	Camera_StatusTypeDef cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
 	DCMI_Driver dcmi  ;
 	dcmi.CAMERA_MsInit();
 	// camera calibration lightroom delay time
-	CAMERA_Delay_us(CAMERA_LIGHTROOM_CALIBRATION_DELAY);
+	DWT_Delay_us(CAMERA_LIGHTROOM_CALIBRATION_DELAY);
 
 	uint8_t count = 0;
 

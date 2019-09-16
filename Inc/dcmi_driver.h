@@ -18,11 +18,7 @@ extern "C" {
 #include "var_interface.h"
 #include "dwt_stm32_delay.h"
 
-/* Macro for CAMERA_read-/writeRegVal functions */
-#define IMAGE_OUTPUT_FORMAT_YUV422 0x00
-#define IMAGE_OUTPUT_FORMAT_RAW10 0x01
-#define IMAGE_OUTPUT_FORMAT_RBG565 0x02
-#define IMAGE_OUTPUT_FORMAT_JPEG 0x03
+
 
 #define COLOR_IMG 0x01
 #define MONOC_IMG 0x00

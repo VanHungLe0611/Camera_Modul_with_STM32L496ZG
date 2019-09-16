@@ -51,6 +51,7 @@ extern "C" {
 #include "dwt_stm32_delay.h"
 #include "var_interface.h"
 #include "i2c_dcmi_driver.h"
+#include "ov2640_dcmi_drv.h"
 
 /** @addtogroup BSP
  * @{
@@ -85,10 +86,10 @@ extern "C" {
  */
 
 /* OV2640 Register Bank Select*/
-#define OV2640_DSP_RA_DLMT 0xFF /* Select register bank */
+#define OV2640_DSP_RA_DLMT 0xFF /* Command to select register bank */
 
 /* Digital signal processor control register bank*/
-#define OV2640_RDSP_RA_DLMT_SEL_DSP 0x00
+#define OV2640_RDSP_RA_DLMT_SEL_DSP 0x00     /* Digital Signal Processor */
 #define OV2640_RDSP_RA_DLMT_SEL_SENSOR 0x01 /* Sensor control register bank */
 
 /*
@@ -462,21 +463,53 @@ extern "C" {
  * @}
  */
 
-/** @defgroup OV2640_Exported_Functions
- * @{
- */
-void ov2640_Init(uint16_t DeviceAddr, uint32_t resolution);
-void ov2640_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
-                   uint32_t BR_value);
-uint16_t ov2640_ReadID(uint16_t DeviceAddr);
+/* Macro for CAMERA_read-/writeRegVal functions */
+#define IMAGE_OUTPUT_FORMAT_YUV422 0x00
+#define IMAGE_OUTPUT_FORMAT_RAW10 0x01
+#define IMAGE_OUTPUT_FORMAT_RBG565 0x02
+#define IMAGE_OUTPUT_FORMAT_JPEG 0x03
 
-void CAMERA_IO_Init(void);
-HAL_StatusTypeDef CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);
-uint8_t CAMERA_IO_Read(uint8_t addr, uint8_t reg);
-void CAMERA_Delay_us(uint32_t delay);
-
-/* CAMERA driver structure */
 extern CAMERA_DrvTypeDef ov2640_drv;
+
+class ov2640: public ov2640_dcmi_drv {
+
+	/** @defgroup OV2640_Exported_Functions
+	 * @{
+	 */
+private:
+	ov2640() {
+		camera_i2c_addr = OV2640_I2C_ADDRESS;
+		current_resolution = 0x00;
+		sensorRegBank = OV2640_RDSP_RA_DLMT_SEL_SENSOR;
+		digitalRegBank = OV2640_RDSP_RA_DLMT_SEL_DSP;
+		regBankSelectCommand  = OV2640_DSP_RA_DLMT;
+	}
+	ov2640(const ov2640&);
+	ov2640& operator=(const ov2640&);
+public:
+
+	static ov2640& instance() {
+		static ov2640 _instance;
+		return _instance;
+	}
+	~ov2640() {
+	}
+
+	void Init(uint16_t DeviceAddr, uint32_t resolution);
+	void Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value,
+			uint32_t BR_value);
+	uint16_t ReadID(uint16_t DeviceAddr);
+	Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution);
+	/* Sensor control */
+	void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
+			uint32_t brightness_level);
+	void CAMERA_BlackWhiteConfig(uint32_t Mode);
+	void CAMERA_ColorEffectConfig(uint32_t Effect);
+	void CAMERA_factoryReset(void);
+	void CAMERA_setOutputFormat(uint8_t format);
+
+};
+/* CAMERA driver structure */
 /**
  * @}
  */

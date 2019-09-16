@@ -14,51 +14,47 @@ extern "C" {
 
 #include "dcmi_driver.h"
 #include "i2c_dcmi_driver.h"
-#include "ov2640.h"
+
 
 // #define DSP_CTRL_REG 0x00
 // #define SENSOR_CTRL_REG 0x01
 
 class ov2640_dcmi_drv {
-
 protected:
-	CAMERA_DrvTypeDef *camera;
 	uint16_t camera_i2c_addr;
 	uint32_t current_resolution;
+	uint8_t digitalRegBank;
+	uint8_t sensorRegBank;
+	uint8_t regBankSelectCommand;
 
-private:
-	ov2640_dcmi_drv() {
-		camera = &ov2640_drv;
-		camera_i2c_addr = OV2640_I2C_ADDRESS;
-		current_resolution = 0x00;
-	}
-	ov2640_dcmi_drv(const ov2640_dcmi_drv&);
-	ov2640_dcmi_drv& operator=(const ov2640_dcmi_drv&);
-	void CAMERA_writeRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS,
-			uint8_t VALUE);
 
 public:
-	static ov2640_dcmi_drv& instance() {
-		static ov2640_dcmi_drv _instance;
-		return _instance;
+	 ov2640_dcmi_drv(){
+		camera_i2c_addr = 0x00;
+		current_resolution = 0x00;
+		digitalRegBank = 0x00;
+		sensorRegBank = 0x00;
+		regBankSelectCommand  = 0x00;
 	}
-	~ov2640_dcmi_drv() {
-	}
+
+	 virtual ~ov2640_dcmi_drv(){
+
+	 }
 
 	/* Camera sensor initialization */
-	Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution);
-
+	virtual Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution) = 0;
 	/* Sensor control */
-	void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
-			uint32_t brightness_level);
-	void CAMERA_BlackWhiteConfig(uint32_t Mode);
-	void CAMERA_ColorEffectConfig(uint32_t Effect);
-	void CAMERA_factoryReset(void);
-	void CAMERA_setOutputFormat(uint8_t format);
+	virtual void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
+			uint32_t brightness_level) = 0;
+	virtual void CAMERA_BlackWhiteConfig(uint32_t Mode) = 0;
+	virtual void CAMERA_ColorEffectConfig(uint32_t Effect) = 0;
+	virtual void CAMERA_factoryReset(void) = 0;
+	virtual void CAMERA_setOutputFormat(uint8_t format) = 0;
 
 	/* Register control */
-	uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS);
-	void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE);
+	 uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS);
+	 void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE);
+	 void CAMERA_writeMultipleRegValue(bool REG_BANK_SEL, uint8_t REG_ADDRESS, uint8_t VALUE);
 
 	/* HAL Function override */
 };
