@@ -50,6 +50,7 @@ extern "C" {
 #include "stm32l4xx_hal.h"
 #include "dwt_stm32_delay.h"
 #include "var_interface.h"
+#include "i2c_dcmi_driver.h"
 
 /** @addtogroup BSP
  * @{

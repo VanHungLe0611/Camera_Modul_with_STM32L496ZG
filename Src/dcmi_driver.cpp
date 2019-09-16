@@ -18,17 +18,17 @@ void DCMI_Driver::CAMERA_MsInit(void) {
  * @brief  Starts the camera capture in continuous mode.
  * @param  buff: pointer to the camera output buffer
  */
-void DCMI_Driver::CAMERA_ContinuousStart(uint8_t *buff) {
-	/* Start the camera capture */
-	HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t) buff,
-			GetSizeInWord(current_resolution));
-}
+//void DCMI_Driver::CAMERA_ContinuousStart(uint8_t *buff) {
+//	/* Start the camera capture */
+//	HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t) buff,
+//			GetSizeInWord(current_resolution));
+//}
 
 /**
  * @brief  Starts the camera capture in snapshot mode.
  * @param  buff: pointer to the camera output buffer
  */
-void DCMI_Driver::CAMERA_SnapshotStart(uint8_t imgNum) {
+void DCMI_Driver::CAMERA_SnapshotStart(uint8_t imgNum, uint16_t current_resolution) {
 
 	/* Start the camera capture */
 
@@ -60,7 +60,6 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t imgNum) {
 		}
 
 		CAMERA_Stop();
-		HAL_Delay(1000);
 		count++;
 		captureCmplt = 0;
 
@@ -96,6 +95,7 @@ void DCMI_Driver::CAMERA_SnapshotStart(uint8_t imgNum) {
 		}
 		uartCmplt = 0;
 		count++;
+
 	}
 
 }
@@ -133,20 +133,6 @@ Camera_StatusTypeDef DCMI_Driver::CAMERA_Stop(void) {
 	if (HAL_DCMI_Stop(phdcmi) == HAL_OK) {
 		ret = CAMERA_OK;
 	}
-
-// TODO: make a camera on/off switch
-
-	camera_status = ret;
-#ifdef CAMERA_DEBUG_RTT
-	if (camera_status == CAMERA_ERROR) {
-		SEGGER_RTT_printf(
-		CAMERA_COMMON_DEBUG_RTT_DISABLE,
-				"-------------Error: CAMERA cannot initialized------------------\n");
-	} else {
-		SEGGER_RTT_printf(CAMERA_COMMON_DEBUG_RTT_DISABLE,
-				"----------------CAMERA INIT OK-------------\n");
-	}
-#endif
 	return ret;
 }
 

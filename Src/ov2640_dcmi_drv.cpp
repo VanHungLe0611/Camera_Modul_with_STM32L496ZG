@@ -27,7 +27,6 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
 
   if (ov2640_ReadID(OV2640_I2C_ADDRESS) == OV2640_ID) {
     /* Initialize the camera driver structure */
-    camera = &ov2640_drv;
 
     /* Camera Init */
     camera->Init(OV2640_I2C_ADDRESS, Resolution);
@@ -41,7 +40,6 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
     CAMERA_setOutputFormat(IMAGE_DEFAULT_FORMAT);
     CAMERA_BlackWhiteConfig(CAMERA_DEFAULT_COLORMODE);
 
-    current_resolution = Resolution;
 
     /* Return CAMERA_OK status */
     ret = CAMERA_OK;
@@ -53,7 +51,6 @@ Camera_StatusTypeDef ov2640_dcmi_drv::CAMERA_Init(uint32_t Resolution) {
 #endif
   }
 
-  camera_status = ret;
 #ifdef CAMERA_DEBUG_RTT
   if (ret == CAMERA_ERROR) {
     SEGGER_RTT_printf(

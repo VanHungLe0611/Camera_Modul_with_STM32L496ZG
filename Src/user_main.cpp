@@ -12,6 +12,8 @@ void user_code2() {
 	ov2640_dcmi_drv &cam_driver = ov2640_dcmi_drv::instance();
 	// init camera
 	Camera_StatusTypeDef cam_status = cam_driver.CAMERA_Init(IMAGE_RESOLUTION);
+	DCMI_Driver dcmi  ;
+	dcmi.CAMERA_MsInit();
 	// camera calibration lightroom delay time
 	CAMERA_Delay_us(CAMERA_LIGHTROOM_CALIBRATION_DELAY);
 
@@ -19,7 +21,7 @@ void user_code2() {
 
 	switch (cam_status) {
 	case CAMERA_OK:
-		cam_driver.CAMERA_SnapshotStart(NUM_IMG);
+		dcmi.CAMERA_SnapshotStart(NUM_IMG,IMAGE_RESOLUTION);
 
 		break;
 	case CAMERA_TIMEOUT:

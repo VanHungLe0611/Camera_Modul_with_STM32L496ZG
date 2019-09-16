@@ -35,11 +35,7 @@ typedef enum {
 
 /* START DCMI_Driver class*/
 class DCMI_Driver {
-protected:
-  CAMERA_DrvTypeDef *camera;
-  Camera_StatusTypeDef camera_status;
-  uint16_t camera_i2c_addr;
-  uint32_t current_resolution;
+
 
 public:
   /*
@@ -50,7 +46,7 @@ public:
 
   /* Camera common operations */
   void CAMERA_ContinuousStart(uint8_t *buff);
-  void CAMERA_SnapshotStart(uint8_t imgNUm);
+  void CAMERA_SnapshotStart(uint8_t imgNum, uint16_t current_resolution);
   void CAMERA_Suspend(void);
   void CAMERA_Resume(void);
   Camera_StatusTypeDef CAMERA_Stop(void);
@@ -70,23 +66,6 @@ public:
   uint32_t GetSizeInWord(uint32_t resolution);
   uint32_t GetSizeInByte(uint32_t resolution, uint8_t color);
 
-  /*
-   *----------------- interface functions for sensor--------------------------
-   */
-  /* Camera sensor initialization */
-  virtual Camera_StatusTypeDef CAMERA_Init(uint32_t Resolution) = 0;
-
-  /* Register control */
-  virtual uint8_t CAMERA_readRegValue(uint8_t REG_ADDRESS) = 0;
-  virtual void CAMERA_writeRegValue(uint8_t REG_ADDRESS, uint8_t VALUE) = 0;
-
-  /* Sensor control */
-  virtual void CAMERA_ContrastBrightnessConfig(uint32_t contrast_level,
-                                               uint32_t brightness_level) = 0;
-  virtual void CAMERA_BlackWhiteConfig(uint32_t Mode) = 0;
-  virtual void CAMERA_ColorEffectConfig(uint32_t Effect) = 0;
-  virtual void CAMERA_factoryReset(void) = 0;
-  virtual void CAMERA_setOutputFormat(uint8_t format) = 0;
 };
 /* END  DCMI_Driver class*/
 

@@ -48,11 +48,11 @@ static uint32_t lineNum;
 
 // comment this line to disable debug
 
-//#define CAMERA_DEBUG_RTT
+#define CAMERA_DEBUG_RTT
 
 
 #define CAMERA_COMMON_DEBUG_RTT_DISABLE 0
-#define CAMERA_I2C_DEBUG_RTT_DISABLE 1
+#define CAMERA_I2C_DEBUG_RTT_DISABLE 0
 #define CAMERA_EVENT_DEBUG_RTT_DISABLE 0
 #define CAMERA_TIME_MEASURE_DEBUG_RTT_DISABLE 0
 
